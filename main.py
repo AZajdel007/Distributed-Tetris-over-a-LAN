@@ -15,11 +15,11 @@ clock = pg.time.Clock()
 loop = True
 
 
-grid.grid[3][1] = 1
+grid.grid[1][1] = 1
 
 
 
-block = blocks.IBlock()
+block = blocks.ZBlock()
 print(grid.grid)
 while loop:
     for event in pg.event.get():
@@ -33,6 +33,10 @@ while loop:
                 block.move_x(1, grid)
             elif event.key == pygame.K_UP:
                 block.rotate(grid)
+            elif event.key == pygame.K_DOWN:
+                block.move_down(grid)
+            elif event.key == pygame.K_SPACE:
+                block.put_on_grid(grid)
     screen.fill(background_color)
     grid.draw(screen)
 
