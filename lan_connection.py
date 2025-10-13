@@ -36,11 +36,11 @@ class Peer:
         if self.my_ready_status:
             self.my_ready_status = False
             for player in self.known_peers.keys():
-                self.sock.sendto(f"Ready:{self.my_ready_status}".encode(), player)
+                self.sock.sendto(f"Ready:{self.my_ready_status}".encode(), (player, PORT))
         else:
             self.my_ready_status = True
             for player in self.known_peers.keys():
-                self.sock.sendto(f"Ready:{self.my_ready_status}".encode(), player)
+                self.sock.sendto(f"Ready:{self.my_ready_status}".encode(), (player, PORT))
 
 
     def __init__(self, discovery_msg):
