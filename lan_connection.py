@@ -47,6 +47,7 @@ class Peer:
     def broadcast(self):
         while True:
             self.sock.sendto(self.discovery_msg.encode(), (BROADCAST_IP, PORT))
+            print(self.known_peers)
             time.sleep(2)
 
 
