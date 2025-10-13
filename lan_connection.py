@@ -37,7 +37,7 @@ class Peer:
         if self.my_ready_status:
             self.my_ready_status = False
             for player in self.known_peers.keys():
-                self.sock.sendto("Ready:1".encode(), (player, PORT))
+                self.sock.sendto("Ready:0".encode(), (player, PORT))
         else:
             self.my_ready_status = True
             for player in self.known_peers.keys():
@@ -68,6 +68,7 @@ class Peer:
                 if msg.startswith("Ready:"):
                     sender_ready_status = bool(int(msg.split(":")[1]))
                     self.known_peers[sender_ip] = sender_ready_status
+                print(self.known_peers)
                 continue
 
             if msg == self.discovery_msg:
