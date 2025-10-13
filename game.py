@@ -1,3 +1,5 @@
+from asyncio import wait_for
+
 import grid
 import random
 import blocks
@@ -28,6 +30,15 @@ class Game:
         self.loop = True
         self.current_block = self.random_new_block()
         self.next_block = self.random_new_block()
+
+    def game_over(self, screen):
+        for n in range(0, 5):
+            self.grid.draw(screen)
+            pg.display.update()
+            pg.time.wait(300)
+            self.current_block.draw(screen)
+            pg.display.update()
+            pg.time.wait(300)
 
 
 
@@ -88,6 +99,9 @@ class Game:
 
             pg.display.update()
             clock.tick(60)
+        self.game_over(screen)
+
+
 
 game = Game()
 game.game_loop()
