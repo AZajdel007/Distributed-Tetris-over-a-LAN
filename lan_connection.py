@@ -2,8 +2,9 @@ import socket
 import time
 import threading
 import ipaddress
-from asyncio import wait_for
 
+
+BROADCAST_IP = "255.255.255.255"
 PORT = 5005
 
 class Peer:
@@ -36,11 +37,11 @@ class Peer:
         if self.my_ready_status:
             self.my_ready_status = False
             for player in self.known_peers.keys():
-                self.sock.sendto(f"Ready:{self.my_ready_status}".encode(), (player, PORT))
+                self.sock.sendto("Ready:1".encode(), (player, PORT))
         else:
             self.my_ready_status = True
             for player in self.known_peers.keys():
-                self.sock.sendto(f"Ready:{self.my_ready_status}".encode(), (player, PORT))
+                self.sock.sendto("Ready:1".encode(), (player, PORT))
 
 
     def __init__(self, discovery_msg):
