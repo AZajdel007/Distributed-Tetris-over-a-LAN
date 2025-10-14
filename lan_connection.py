@@ -58,8 +58,12 @@ class Peer:
 
 
     def search_for_peers(self):
+        self.sock.settimeout(1.0)
         while not self.stop_listen_event.is_set():
-            data, addr = self.sock.recvfrom(1024)
+            try:
+                data, addr = self.sock.recvfrom(1024)
+            except socket.timeout:
+                continue
             msg = data.decode()
             sender_ip = addr[0]
             print(f"Otrzymano: {sender_ip}: {msg}")

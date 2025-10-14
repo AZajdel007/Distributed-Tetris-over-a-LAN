@@ -97,8 +97,14 @@ class Game:
                 peer.stop_broadcast_event.set()
             for event in pg.event.get():
                 if event.type == pg.QUIT:
+                    peer.stop_listen_event.set()
+                    peer.stop_broadcast_event.set()
+                    listening_thread.join()
+                    broadcast_thread.join()
                     pg.quit()
                     sys.exit()
+
+
                 change_ready_status_button.handle_event(event)
 
             change_ready_status_button.draw(self.screen)
