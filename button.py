@@ -17,14 +17,15 @@ class Button:
 
     def draw(self, screen):
         cursor_over = is_cursor_over(self.rect)
-        clicked = pg.mouse.get_pressed()[0]
 
         if cursor_over:
             pg.draw.rect(screen, self.cursor_over_color, self.rect)
-            if clicked:
-                self.action()
         else:
             pg.draw.rect(screen, self.color, self.rect)
-
         text_surf = self.font.render(self.text, True, self.text_color)
         screen.blit(text_surf, (self.rect.x + 15, self.rect.y + 15))
+
+    def handle_event(self, event):
+        if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:  # 1 = lewy przycisk
+            if is_cursor_over(self.rect):
+                self.action()

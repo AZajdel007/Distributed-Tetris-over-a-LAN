@@ -92,3 +92,8 @@ class Peer:
 
             time.sleep(2)
 
+#peer = Peer("yo")
+#listening_thread = threading.Thread(target=peer.search_for_peers)
+#broadcast_thread = threading.Thread(target=peer.broadcast)
+#listening_thread.start()
+#broadcast_thread.start()

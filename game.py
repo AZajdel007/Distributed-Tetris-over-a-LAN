@@ -5,6 +5,9 @@ import pygame as pg
 import sys
 import lan_connection as lan
 import threading
+import colors
+import button
+from functools import partial
 
 
 
@@ -64,15 +67,43 @@ class Game:
         listening_thread.start()
         broadcast_thread.start()
         lobby_loop = True
+
+        change_ready_status_button = button.Button(50, 300, 200, 50, "Ready!", colors.color[8], colors.color[9],
+                                         colors.color[0], peer.change_ready_status)
+
         while lobby_loop:
+            self.screen.fill(self.background_color)
+            font = pg.font.Font(None, 36)
+            text_surf = font.render("Searching for players", True, colors.color[10])
+            self.screen.blit(text_surf, (24, 25))
+
+
+            if peer.my_ready_status:
+                change_ready_status_button.text = "Not ready"
+                text_surf = font.render("Ready!", True, colors.color[11])
+                self.screen.blit(text_surf, (100, 75))
+            else:
+                change_ready_status_button.text = "Ready!"
+                text_surf = font.render("Not ready!", True, colors.color[12])
+                self.screen.blit(text_surf, (86, 75))
+
             ready_peers = 0
             for known_peer in peer.known_peers.keys():
                 if peer.known_peers[known_peer]:
                     ready_peers += 1
-            if ready_peers == len(peer.known_peers):
+            if ready_peers == len(peer.known_peers) and ready_peers != 0:
                 lobby_loop = False
                 peer.stop_listen_event.set()
                 peer.stop_broadcast_event.set()
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    pg.quit()
+                    sys.exit()
+                change_ready_status_button.handle_event(event)
+
+            change_ready_status_button.draw(self.screen)
+            pg.display.update()
+            self.clock.tick(60)
 
 
 
@@ -134,3 +165,12 @@ def start_solo_game(screen, bg_color, clock):
     game = Game(screen, bg_color, clock)
     game.game_loop()
 
+def start_k_width_game(screen, bg_color, clock):
+    game = Game(screen, bg_color, clock)
+    game.gamemode = "K-Width"
+    game.lobby()
+
+def start_shifting_game(screen, bg_color, clock):
+    game = Game(screen, bg_color, clock)
+    game.gamemode = "Shifting"
+    game.lobby()
