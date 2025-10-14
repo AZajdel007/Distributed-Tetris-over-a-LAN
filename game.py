@@ -1,11 +1,50 @@
 from asyncio import wait_for
-
+import colors
 import grid
 import random
 import blocks
 import pygame as pg
 import sys
+
+
+def is_cursor_over(rect):
+    return rect.collidepoint(pg.mouse.get_pos())
+
 class Game:
+
+    def main_menu(self):
+        loop = True
+        self.screen.fill(self.background_color)
+        while loop:
+            play_solo_button = pg.Rect(50, 50, 100, 50)
+            play_k_width_button = pg.Rect(50, 200, 100, 50)
+            play_shifting_button = pg.Rect(50, 300, 100, 50)
+
+            cursor_over_play_solo_button = is_cursor_over(play_solo_button)
+            cursor_over_play_k_width_button = is_cursor_over(play_k_width_button)
+            cursor_over_play_shifting_button = is_cursor_over(play_shifting_button)
+
+            solo_button_color = colors.color[1] if cursor_over_play_solo_button else colors.color[2]
+            k_width_button_color = colors.color[1] if cursor_over_play_k_width_button else colors.color[2]
+            shifting_button_color = colors.color[1] if cursor_over_play_shifting_button else colors.color[2]
+
+            pg.draw.rect(self.screen, solo_button_color, play_solo_button)
+            pg.draw.rect(self.screen, k_width_button_color, play_k_width_button)
+            pg.draw.rect(self.screen, shifting_button_color, play_shifting_button)
+
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    pg.quit()
+                    sys.exit()
+                elif event.type == pg.MOUSEBUTTONDOWN:
+                    if cursor_over_play_solo_button:
+                        print("Solo")
+                    elif cursor_over_play_k_width_button:
+                        print("k-width")
+                    elif cursor_over_play_shifting_button:
+                        print("Shifting")
+            pg.display.flip()
+
     def random_new_block(self):
         block_id = random.randint(1, 8)
         if block_id == 1:
@@ -31,6 +70,13 @@ class Game:
         self.current_block = self.random_new_block()
         self.next_block = self.random_new_block()
 
+        pg.init()
+        self.screen = pg.display.set_mode((300, 600))
+        self.background_color = (1, 8, 59)
+
+        pg.display.set_caption("Tetris")
+        self.clock = pg.time.Clock()
+
     def game_over(self, screen):
         for n in range(0, 5):
             self.grid.draw(screen)
@@ -44,12 +90,8 @@ class Game:
 
 
     def game_loop(self):
-        pg.init()
-        background_color = (1, 8, 59)
 
-        screen = pg.display.set_mode((300, 600))
-        pg.display.set_caption("Tetris")
-        clock = pg.time.Clock()
+
         block_goes_down = pg.USEREVENT + 1
 
         # Ustawiamy timer co 1000 ms (czyli co 1 sekundę)
@@ -92,16 +134,17 @@ class Game:
                         self.current_block.move_down(self.grid)
                     elif event.key == pg.K_SPACE:
                         self.current_block.put_on_grid(self.grid)
-            screen.fill(background_color)
-            self.grid.draw(screen)
+            self.screen.fill(self.background_color)
+            self.grid.draw(self.screen)
 
-            self.current_block.draw(screen)
+            self.current_block.draw(self.screen)
 
             pg.display.update()
-            clock.tick(60)
-        self.game_over(screen)
+            self.clock.tick(60)
+        self.game_over(self.screen)
 
 
 
 game = Game()
-game.game_loop()
+game.main_menu()
+#game.game_loop()
