@@ -1,46 +1,10 @@
-import pygame
 import pygame as pg
-import sys
-import grid
-import blocks
-import colors
+
+import main_menu as menu
 pg.init()
-background_color = (1, 8, 59)
 
-grid = grid.Grid()
-screen = pg.display.set_mode((300, 600))
-pygame.display.set_caption("Tetris")
-clock = pg.time.Clock()
-
-loop = True
-
-
-grid.grid[1][1] = 1
-
-
-
-block = blocks.ZBlock()
-print(grid.grid)
-while loop:
-    for event in pg.event.get():
-        if event.type == pg.QUIT:
-            pg.quit()
-            sys.exit()
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_LEFT:
-                block.move_x(-1, grid)
-            elif event.key == pygame.K_RIGHT:
-                block.move_x(1, grid)
-            elif event.key == pygame.K_UP:
-                block.rotate(grid)
-            elif event.key == pygame.K_DOWN:
-                block.move_down(grid)
-            elif event.key == pygame.K_SPACE:
-                block.put_on_grid(grid)
-    screen.fill(background_color)
-    grid.draw(screen)
-
-    block.draw(screen)
-
-    pg.display.update()
-    clock.tick(60)
+mainmenu = menu.MainMenu()
+mainmenu.main_menu()
+#game = Game()
+#game.main_menu()
+#game.game_loop()

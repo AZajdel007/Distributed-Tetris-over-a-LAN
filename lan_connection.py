@@ -53,10 +53,12 @@ class Peer:
         self.my_ip = self.get_my_ip()
         self.my_broadcast = self.get_broadcast_ip()
         self.known_peers = dict()
+        self.stop_listen_event = threading.Event()
+        self.stop_broadcast_event = threading.Event()
 
 
     def search_for_peers(self):
-        while True:
+        while not self.stop_listen_event.is_set():
             data, addr = self.sock.recvfrom(1024)
             msg = data.decode()
             sender_ip = addr[0]
@@ -84,23 +86,9 @@ class Peer:
                 print(self.known_peers)
 
     def broadcast(self):
-        while True:
+        while not self.stop_broadcast_event.is_set():
             self.sock.sendto(self.discovery_msg.encode(), (self.my_broadcast, PORT))
 
 
             time.sleep(2)
 
-test = False
-print(test)
-test = test + 1
-print(test)
-test = test + 1
-print(test)
-
-peer = Peer("yo")
-thread1 = threading.Thread(target=peer.search_for_peers)
-thread2 = threading.Thread(target=peer.broadcast)
-thread1.start()
-thread2.start()
-time.sleep(5)
-peer.change_ready_status()

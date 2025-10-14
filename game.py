@@ -1,49 +1,20 @@
-from asyncio import wait_for
-import colors
 import grid
 import random
 import blocks
 import pygame as pg
 import sys
+import lan_connection as lan
+import threading
 
 
-def is_cursor_over(rect):
-    return rect.collidepoint(pg.mouse.get_pos())
+
+
+
+
+
+
 
 class Game:
-
-    def main_menu(self):
-        loop = True
-        self.screen.fill(self.background_color)
-        while loop:
-            play_solo_button = pg.Rect(50, 50, 100, 50)
-            play_k_width_button = pg.Rect(50, 200, 100, 50)
-            play_shifting_button = pg.Rect(50, 300, 100, 50)
-
-            cursor_over_play_solo_button = is_cursor_over(play_solo_button)
-            cursor_over_play_k_width_button = is_cursor_over(play_k_width_button)
-            cursor_over_play_shifting_button = is_cursor_over(play_shifting_button)
-
-            solo_button_color = colors.color[1] if cursor_over_play_solo_button else colors.color[2]
-            k_width_button_color = colors.color[1] if cursor_over_play_k_width_button else colors.color[2]
-            shifting_button_color = colors.color[1] if cursor_over_play_shifting_button else colors.color[2]
-
-            pg.draw.rect(self.screen, solo_button_color, play_solo_button)
-            pg.draw.rect(self.screen, k_width_button_color, play_k_width_button)
-            pg.draw.rect(self.screen, shifting_button_color, play_shifting_button)
-
-            for event in pg.event.get():
-                if event.type == pg.QUIT:
-                    pg.quit()
-                    sys.exit()
-                elif event.type == pg.MOUSEBUTTONDOWN:
-                    if cursor_over_play_solo_button:
-                        print("Solo")
-                    elif cursor_over_play_k_width_button:
-                        print("k-width")
-                    elif cursor_over_play_shifting_button:
-                        print("Shifting")
-            pg.display.flip()
 
     def random_new_block(self):
         block_id = random.randint(1, 8)
@@ -64,18 +35,17 @@ class Game:
         else:
             return blocks.TBlock()
 
-    def __init__(self):
+    def __init__(self, screen, bg_color, clock):
         self.grid = grid.Grid()
         self.loop = True
         self.current_block = self.random_new_block()
         self.next_block = self.random_new_block()
+        self.gamemode = "Tetris"
 
-        pg.init()
-        self.screen = pg.display.set_mode((300, 600))
-        self.background_color = (1, 8, 59)
 
-        pg.display.set_caption("Tetris")
-        self.clock = pg.time.Clock()
+        self.screen = screen
+        self.background_color = bg_color
+        self.clock = clock
 
     def game_over(self, screen):
         for n in range(0, 5):
@@ -86,6 +56,23 @@ class Game:
             pg.display.update()
             pg.time.wait(300)
 
+
+    def lobby(self):
+        peer = lan.Peer(self.gamemode)
+        listening_thread = threading.Thread(target=peer.search_for_peers)
+        broadcast_thread = threading.Thread(target=peer.broadcast)
+        listening_thread.start()
+        broadcast_thread.start()
+        lobby_loop = True
+        while lobby_loop:
+            ready_peers = 0
+            for known_peer in peer.known_peers.keys():
+                if peer.known_peers[known_peer]:
+                    ready_peers += 1
+            if ready_peers == len(peer.known_peers):
+                lobby_loop = False
+                peer.stop_listen_event.set()
+                peer.stop_broadcast_event.set()
 
 
 
@@ -133,7 +120,7 @@ class Game:
                     elif event.key == pg.K_DOWN:
                         self.current_block.move_down(self.grid)
                     elif event.key == pg.K_SPACE:
-                        self.current_block.put_on_grid(self.grid)
+                        self.current_block.drop(self.grid)
             self.screen.fill(self.background_color)
             self.grid.draw(self.screen)
 
@@ -143,8 +130,7 @@ class Game:
             self.clock.tick(60)
         self.game_over(self.screen)
 
+def start_solo_game(screen, bg_color, clock):
+    game = Game(screen, bg_color, clock)
+    game.game_loop()
 
-
-game = Game()
-game.main_menu()
-#game.game_loop()

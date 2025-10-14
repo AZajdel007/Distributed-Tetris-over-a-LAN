@@ -1,5 +1,4 @@
 import pygame as pg
-import pygame.draw
 import colors
 
 class Grid:

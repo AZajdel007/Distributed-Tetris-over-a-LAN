@@ -53,6 +53,10 @@ class Block:
         if not self.check_collision_under(grid):
             self.position.row = self.position.row + 1
 
+    def drop(self, grid):
+        while not self.check_collision_under(grid):
+            self.move_down(grid)
+
     def put_on_grid(self, grid):
         for tile in self.rotations[self.current_rotation]:
             grid.grid[self.position.row+tile[1]][self.position.column + tile[0]] = self.block_color
@@ -89,7 +93,7 @@ class TBlock(Block):
         Block.__init__(self)
 
         self.block_color = 3
-        self.position = Position(0, 4)
+        self.position = Position(1, 4)
         self.rotations = {
             0: ((-1, 0), (0, 0), (1, 0), (0, -1)),
             1: ((0, -1), (0, 0), (0, 1), (-1, 0)),
