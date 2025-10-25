@@ -7,14 +7,6 @@ import lan_connection as lan
 import threading
 import colors
 import button
-from functools import partial
-
-
-
-
-
-
-
 
 
 class Game:
@@ -44,7 +36,7 @@ class Game:
         self.current_block = self.random_new_block()
         self.next_block = self.random_new_block()
         self.gamemode = "Tetris"
-
+        self.peer = None
 
         self.screen = screen
         self.background_color = bg_color
@@ -61,15 +53,15 @@ class Game:
 
 
     def lobby(self):
-        peer = lan.Peer(self.gamemode)
-        listening_thread = threading.Thread(target=peer.search_for_peers)
-        broadcast_thread = threading.Thread(target=peer.broadcast)
+        self.peer = lan.Peer(self.gamemode)
+        listening_thread = threading.Thread(target=self.peer.search_for_peers)
+        broadcast_thread = threading.Thread(target=self.peer.broadcast)
         listening_thread.start()
         broadcast_thread.start()
         lobby_loop = True
 
         change_ready_status_button = button.Button(50, 300, 200, 50, "Ready!", colors.color[8], colors.color[9],
-                                         colors.color[0], peer.change_ready_status)
+                                         colors.color[0], self.peer.change_ready_status)
 
         while lobby_loop:
             self.screen.fill(self.background_color)
@@ -78,7 +70,7 @@ class Game:
             self.screen.blit(text_surf, (24, 25))
 
 
-            if peer.my_ready_status:
+            if self.peer.my_ready_status:
                 change_ready_status_button.text = "Not ready"
                 text_surf = font.render("Ready!", True, colors.color[11])
                 self.screen.blit(text_surf, (100, 75))
@@ -88,17 +80,18 @@ class Game:
                 self.screen.blit(text_surf, (86, 75))
 
             ready_peers = 0
-            for known_peer in peer.known_peers.keys():
-                if peer.known_peers[known_peer]:
+            for known_peer in self.peer.known_peers.keys():
+                if self.peer.known_peers[known_peer]:
                     ready_peers += 1
-            if ready_peers == len(peer.known_peers) and ready_peers != 0:
+            if ready_peers == len(self.peer.known_peers) and ready_peers != 0 and self.peer.my_ready_status:
                 lobby_loop = False
-                peer.stop_listen_event.set()
-                peer.stop_broadcast_event.set()
+                self.peer.stop_listen_event.set()
+                self.peer.stop_broadcast_event.set()
+                print("Game start")
             for event in pg.event.get():
                 if event.type == pg.QUIT:
-                    peer.stop_listen_event.set()
-                    peer.stop_broadcast_event.set()
+                    self.peer.stop_listen_event.set()
+                    self.peer.stop_broadcast_event.set()
                     listening_thread.join()
                     broadcast_thread.join()
                     pg.quit()
@@ -111,11 +104,13 @@ class Game:
             pg.display.update()
             self.clock.tick(60)
 
-
-
     def game_loop(self):
+        pass
 
 
+
+class SoloTetris(Game):
+    def game_loop(self):
         block_goes_down = pg.USEREVENT + 1
 
         # Ustawiamy timer co 1000 ms (czyli co 1 sekundę)
@@ -130,14 +125,12 @@ class Game:
                     del self.grid.grid[row]
                     self.grid.grid.insert(0, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
 
-
             if self.current_block.is_placed:
                 self.current_block = self.next_block
                 if not self.current_block.check_collision_with_wall(0, self.grid):
                     self.next_block = self.random_new_block()
                 else:
                     self.loop = False
-
 
             for event in pg.event.get():
                 if event.type == pg.QUIT:
@@ -167,16 +160,25 @@ class Game:
             self.clock.tick(60)
         self.game_over(self.screen)
 
+
+class KWidthTetris(Game):
+    def game_loop(self):
+        pass
+
+class ShiftingTetris(Game):
+    def game_loop(self):
+        pass
+
 def start_solo_game(screen, bg_color, clock):
-    game = Game(screen, bg_color, clock)
+    game = SoloTetris(screen, bg_color, clock)
     game.game_loop()
 
 def start_k_width_game(screen, bg_color, clock):
-    game = Game(screen, bg_color, clock)
+    game = KWidthTetris(screen, bg_color, clock)
     game.gamemode = "K-Width"
     game.lobby()
 
 def start_shifting_game(screen, bg_color, clock):
-    game = Game(screen, bg_color, clock)
+    game = ShiftingTetris(screen, bg_color, clock)
     game.gamemode = "Shifting"
     game.lobby()

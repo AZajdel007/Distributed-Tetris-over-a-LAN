@@ -26,6 +26,7 @@ class MainMenu:
 
 
         while loop:
+            self.screen.fill(self.background_color)
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     pg.quit()
