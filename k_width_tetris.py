@@ -11,3 +11,4 @@ def start_k_width_game(screen, bg_color, clock):
     game = KWidthTetris(screen, bg_color, clock)
     game.gamemode = "K-Width"
     game.lobby()
+    game.game_loop()
