@@ -9,14 +9,12 @@ import sys
 
 class MainMenu:
     def __init__(self):
-        icon = pg.image.load("assets/logo.png")
-
-        # Ustaw ikonę okna
+        icon = pg.image.load("assets/logo.png") # IKONKA GRY
         pg.display.set_icon(icon)
-        self.screen = pg.display.set_mode((300, 600))
-        self.background_color = (1, 8, 59)
-        pg.display.set_caption("Tetris")
-        self.clock = pg.time.Clock()
+        self.screen = pg.display.set_mode((300, 600)) # ROZMIAR OKNA
+        self.background_color = (1, 8, 59) # BACKGROUND COLOR MENU GŁÓWNEGO
+        pg.display.set_caption("Tetris") # NAZWA GRY NA PASKU
+        self.clock = pg.time.Clock() # ZEGAR
 
     def main_menu(self):
         loop = True

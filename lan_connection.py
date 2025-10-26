@@ -113,10 +113,11 @@ class Peer:
         self.sock.settimeout(1.0)
         while not self.stop_listen_event.is_set():
             try:
-                data, addr = self.sock.recvfrom(1024)
-                msg = {data.decode(), addr}
-                print(msg)
-                self.received_msg.put(msg)
+                data, sender = self.sock.recvfrom(1024)
+                if sender in self.known_peers:
+                    msg = {data.decode(), sender}
+                    print(msg)
+                    self.received_msg.put(msg)
             except socket.timeout:
                 continue
 

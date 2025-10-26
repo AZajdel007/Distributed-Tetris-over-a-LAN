@@ -1,8 +1,13 @@
 import game as g
+import threading
+import queue
 
 class KWidthTetris(g.Game):
     def game_loop(self):
         print("Start!!!")
+        listening_thread = threading.Thread(target=self.peer.listen)
+        listening_thread.start()
+
 
 
 
