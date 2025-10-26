@@ -89,6 +89,7 @@ class Game:
                 self.peer.stop_broadcast_event.set()
             for event in pg.event.get():
                 if event.type == pg.QUIT:
+                    self.peer.quit()
                     self.peer.stop_listen_event.set()
                     self.peer.stop_broadcast_event.set()
                     listening_thread.join()

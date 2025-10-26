@@ -76,6 +76,8 @@ class Peer:
                 if msg.startswith("Ready:"):
                     sender_ready_status = bool(int(msg.split(":")[1]))
                     self.known_peers[sender_ip] = sender_ready_status
+                elif msg == f"{sender_ip}:QUIT":
+                    self.known_peers.pop(sender_ip)
                 print(self.known_peers)
                 continue
 
@@ -118,6 +120,10 @@ class Peer:
                 continue
 
 
+    def quit(self):
+        print(f"{self.my_ip}: Bye")
+        for player in self.known_peers:
+            self.sock.sendto(f"{self.my_ip}:QUIT".encode(), (player, PORT))
 
 
 #peer = Peer("yo")
