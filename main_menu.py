@@ -9,6 +9,10 @@ import sys
 
 class MainMenu:
     def __init__(self):
+        icon = pg.image.load("assets/logo.png")
+
+        # Ustaw ikonę okna
+        pg.display.set_icon(icon)
         self.screen = pg.display.set_mode((300, 600))
         self.background_color = (1, 8, 59)
         pg.display.set_caption("Tetris")
