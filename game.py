@@ -161,24 +161,14 @@ class SoloTetris(Game):
         self.game_over(self.screen)
 
 
-class KWidthTetris(Game):
-    def game_loop(self):
-        pass
 
-class ShiftingTetris(Game):
-    def game_loop(self):
-        pass
+
+
 
 def start_solo_game(screen, bg_color, clock):
     game = SoloTetris(screen, bg_color, clock)
     game.game_loop()
 
-def start_k_width_game(screen, bg_color, clock):
-    game = KWidthTetris(screen, bg_color, clock)
-    game.gamemode = "K-Width"
-    game.lobby()
 
-def start_shifting_game(screen, bg_color, clock):
-    game = ShiftingTetris(screen, bg_color, clock)
-    game.gamemode = "Shifting"
-    game.lobby()
+
+

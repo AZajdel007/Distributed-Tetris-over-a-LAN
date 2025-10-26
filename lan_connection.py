@@ -2,6 +2,7 @@ import socket
 import time
 import threading
 import ipaddress
+import queue
 
 
 BROADCAST_IP = "255.255.255.255"
@@ -55,6 +56,7 @@ class Peer:
         self.known_peers = dict()
         self.stop_listen_event = threading.Event()
         self.stop_broadcast_event = threading.Event()
+        self.received_msg = queue.Queue()
 
 
     def search_for_peers(self):
@@ -95,6 +97,28 @@ class Peer:
 
 
             time.sleep(2)
+
+    def send_msg_to_all_players(self, msg):
+        for player in self.known_peers:
+            self.sock.sendto(msg.encode(), (player, PORT))
+
+    def send_msg_to_one_player(self, player_ip, msg):
+            self.sock.sendto(msg.encode(), (player_ip, PORT))
+
+    def listen(self):
+        self.stop_listen_event.clear()
+        self.sock.settimeout(1.0)
+        while not self.stop_listen_event.is_set():
+            try:
+                data, addr = self.sock.recvfrom(1024)
+                msg = {data.decode(), addr}
+                print(msg)
+                self.received_msg.put(msg)
+            except socket.timeout:
+                continue
+
+
+
 
 #peer = Peer("yo")
 #listening_thread = threading.Thread(target=peer.search_for_peers)
