@@ -101,8 +101,9 @@ class Peer:
             time.sleep(2)
 
     def send_msg_to_all_players(self, msg):
-        for player in self.known_peers:
-            self.sock.sendto(msg.encode(), (player, PORT))
+        if len(self.known_peers) != 0:
+            for player in self.known_peers:
+                self.sock.sendto(msg.encode(), (player, PORT))
 
     def send_msg_to_one_player(self, player_ip, msg):
             self.sock.sendto(msg.encode(), (player_ip, PORT))
