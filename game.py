@@ -70,7 +70,6 @@ class Game:
             self.screen.blit(text_surf, (24, 25))
 
 
-
             if self.peer.my_ready_status:
                 change_ready_status_button.text = "Not ready"
                 text_surf = font.render("Ready!", True, colors.color[11])
