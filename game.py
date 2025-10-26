@@ -81,8 +81,7 @@ class Game:
 
             ready_peers = 0
             for known_peer in self.peer.known_peers.keys():
-                if self.peer.known_peers[known_peer] == 'True':
-                    test = self.peer.known_peers[known_peer]
+                if self.peer.known_peers[known_peer]:
                     ready_peers += 1
             if ready_peers == len(self.peer.known_peers) and ready_peers != 0 and self.peer.my_ready_status == True:
                 lobby_loop = False
