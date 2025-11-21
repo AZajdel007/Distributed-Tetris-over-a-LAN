@@ -169,6 +169,7 @@ def start_solo_game(screen, bg_color, clock):
     game = SoloTetris(screen, bg_color, clock)
     game.game_loop()
 
-
+def start_redline_game():
+    pass
 
 
