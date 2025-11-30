@@ -44,7 +44,7 @@ class KWidthTetris(g.Game):
                         for x in range(len(self.peer.known_peers) + 1):
                             self.players_row_status[row][x] = 0
                             del self.grid.grid[row]
-                            self.grid.grid.insert(row, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+                            self.grid.grid.insert(0, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
 
             if self.current_block.is_placed:
                 self.current_block = self.next_block
@@ -76,7 +76,7 @@ class KWidthTetris(g.Game):
                         self.current_block.move_down(self.grid)
                     elif event.key == pg.K_SPACE:
                         self.current_block.drop(self.grid)
-                elif not self.peer.received_msg.empty():
+                if not self.peer.received_msg.empty():
                     print("elo")
                     new_msg = self.peer.received_msg.get()
                     new_msg = new_msg[0]
@@ -92,7 +92,7 @@ class KWidthTetris(g.Game):
                                 for x in range(len(self.known_peers)+1):
                                     self.players_row_status[row][x] = 0
                                     del self.grid.grid[row]
-                                    self.grid.grid.insert(row, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+                                    self.grid.grid.insert(0, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
 
                     print(self.players_row_status)
 
