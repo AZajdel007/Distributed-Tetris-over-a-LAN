@@ -27,7 +27,7 @@ class KWidthTetris(g.Game):
                     if self.grid.grid[row][col] != 0:
                         tiles = tiles + 1
                 if tiles == 10:
-                    self.players_row_status[3][row] = 1
+                    self.players_row_status[row][3] = 1
                     self.peer.send_msg_to_all_players(f"{self.peer.my_ip}:{row}")
                     #del self.grid.grid[row]
                     #self.grid.grid.insert(0, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
