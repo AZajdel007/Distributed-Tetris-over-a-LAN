@@ -91,7 +91,8 @@ class KWidthTetris(g.Game):
                         for player in range(len(self.known_peers)+1):
                             if all(x == 1 for x in self.players_row_status[row]):
                                 for x in range(len(self.known_peers)+1):
-                                    self.players_row_status[row][x] = 0
+                                    del self.players_row_status[row]
+                                    self.players_row_status.insert(0, [0 for n in range(len(self.peer.known_peers) + 1)])
                                     del self.grid.grid[row]
                                     self.grid.grid.insert(0, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
 
