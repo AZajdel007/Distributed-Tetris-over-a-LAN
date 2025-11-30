@@ -21,13 +21,14 @@ class KWidthTetris(g.Game):
         # Ustawiamy timer co 1000 ms (czyli co 1 sekundę)
         pg.time.set_timer(block_goes_down, 1000)
         while self.loop:
+            print(self.players_row_status)
             for row in range(self.grid.rows - 1, -1, -1):
                 tiles = 0
                 for col in range(self.grid.cols):
                     if self.grid.grid[row][col] != 0:
                         tiles = tiles + 1
                 if tiles == 10:
-                    self.players_row_status[row][len(self.peer.known_peers)+1] = 1
+                    self.players_row_status[row][len(self.peer.known_peers)] = 1
                     self.peer.send_msg_to_all_players(f"{self.peer.my_ip}:{row}")
                     #del self.grid.grid[row]
                     #self.grid.grid.insert(0, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
