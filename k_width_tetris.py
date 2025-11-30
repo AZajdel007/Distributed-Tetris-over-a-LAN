@@ -69,6 +69,7 @@ class KWidthTetris(g.Game):
                     elif event.key == pg.K_SPACE:
                         self.current_block.drop(self.grid)
                 elif not self.peer.received_msg.empty():
+                    print("elo")
                     new_msg = self.peer.received_msg.get()
                     new_msg = new_msg[0]
                     print(self.players_row_status)
