@@ -21,7 +21,7 @@ class KWidthTetris(g.Game):
         # Ustawiamy timer co 1000 ms (czyli co 1 sekundę)
         pg.time.set_timer(block_goes_down, 1000)
         while self.loop:
-            print(self.players_row_status)
+            #print(self.players_row_status)
             for row in range(self.grid.rows - 1, -1, -1):
                 tiles = 0
                 for col in range(self.grid.cols):
@@ -47,6 +47,10 @@ class KWidthTetris(g.Game):
 
             for event in pg.event.get():
                 if event.type == pg.QUIT:
+                    self.peer.quit()
+                    self.peer.stop_listen_event.set()
+                    self.peer.stop_broadcast_event.set()
+                    listening_thread.join()
                     pg.quit()
                     sys.exit()
                 elif event.type == block_goes_down:
@@ -66,17 +70,21 @@ class KWidthTetris(g.Game):
                         self.current_block.drop(self.grid)
                 elif not self.peer.received_msg.empty():
                     new_msg = self.peer.received_msg.get()
+                    new_msg = new_msg[0]
                     print(self.players_row_status)
                     if ':' in new_msg:
                         sender_ip, row = new_msg.split(":")
                         peer_index = self.peer.known_peers.index(sender_ip)
                         self.players_row_status[row][peer_index] = 1
+                        print(peer_index)
                         for player in range(len(self.peer.known_peers)+1):
                             if all(x == 1 for x in self.players_row_status[row]):
                                 for x in range(len(self.peer.known_peers)+1):
                                     self.players_row_status[row][x] = 0
                                     del self.grid.grid[row]
                                     self.grid.grid.insert(row, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+
+                    print(self.players_row_status)
 
 
             self.screen.fill(self.background_color)
