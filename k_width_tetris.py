@@ -7,7 +7,11 @@ import queue
 class KWidthTetris(g.Game):
     def __init__(self, screen, bg_color, clock):
         super().__init__(screen, bg_color, clock)
+        self.known_peers = []
         self.players_row_status = None
+
+        self.known_peers = []
+
 
     def game_loop(self):
         print("Start!!!")
@@ -17,6 +21,10 @@ class KWidthTetris(g.Game):
         block_goes_down = pg.USEREVENT + 1
 
         self.players_row_status = [[0 for n in range(len(self.peer.known_peers)+1)] for n in range(20)]
+
+        for peer in self.peer.known_peers:
+            self.known_peers.append(peer)
+        print(self.known_peers)
 
         # Ustawiamy timer co 1000 ms (czyli co 1 sekundę)
         pg.time.set_timer(block_goes_down, 1000)
@@ -75,12 +83,12 @@ class KWidthTetris(g.Game):
                     print(self.players_row_status)
                     if ':' in new_msg:
                         sender_ip, row = new_msg.split(":")
-                        peer_index = self.peer.known_peers.index(sender_ip)
+                        peer_index = self.known_peers.index(sender_ip)
                         self.players_row_status[row][peer_index] = 1
                         print(peer_index)
-                        for player in range(len(self.peer.known_peers)+1):
+                        for player in range(len(self.known_peers)+1):
                             if all(x == 1 for x in self.players_row_status[row]):
-                                for x in range(len(self.peer.known_peers)+1):
+                                for x in range(len(self.known_peers)+1):
                                     self.players_row_status[row][x] = 0
                                     del self.grid.grid[row]
                                     self.grid.grid.insert(row, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
