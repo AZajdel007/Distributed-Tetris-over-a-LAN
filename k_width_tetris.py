@@ -83,8 +83,9 @@ class KWidthTetris(g.Game):
                     print(self.players_row_status)
                     if ':' in new_msg:
                         sender_ip, row = new_msg.split(":")
+                        row = int(row)
                         peer_index = self.known_peers.index(sender_ip)
-                        self.players_row_status[int(row)][peer_index] = 1
+                        self.players_row_status[row][peer_index] = 1
                         print(peer_index)
                         for player in range(len(self.known_peers)+1):
                             if all(x == 1 for x in self.players_row_status[row]):
