@@ -7,7 +7,7 @@ import queue
 class KWidthTetris(g.Game):
     def __init__(self, screen, bg_color, clock):
         super().__init__(screen, bg_color, clock)
-        self.players_row_status = [[0 for n in range(len(self.peer.known_peers))] for n in range(20)]
+        self.players_row_status = None
 
     def game_loop(self):
         print("Start!!!")
@@ -15,6 +15,8 @@ class KWidthTetris(g.Game):
         listening_thread.start()
 
         block_goes_down = pg.USEREVENT + 1
+
+        self.players_row_status = [[0 for n in range(len(self.peer.known_peers))] for n in range(20)]
 
         # Ustawiamy timer co 1000 ms (czyli co 1 sekundę)
         pg.time.set_timer(block_goes_down, 1000)
