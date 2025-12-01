@@ -95,6 +95,7 @@ class KWidthTetris(g.Game):
 
             for event in pg.event.get():
                 if event.type == pg.QUIT:
+                    self.peer.send_msg_to_all_players(f"{self.peer.my_ip}:Bye")
                     self.peer.quit()
                     self.peer.stop_listen_event.set()
                     self.peer.stop_broadcast_event.set()
