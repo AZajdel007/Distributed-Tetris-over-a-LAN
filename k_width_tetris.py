@@ -72,6 +72,7 @@ class KWidthTetris(g.Game):
                 print("elo")
                 new_msg = self.peer.received_msg.pop()
                 new_msg, sender_ip = new_msg
+                sender_ip = sender_ip[0]
                 print(self.players_row_status)
 
                 if '-' in new_msg:
