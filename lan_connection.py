@@ -115,7 +115,7 @@ class Peer:
         while not self.stop_listen_event.is_set():
             try:
                 data, sender = self.sock.recvfrom(1024)
-
+                print(f"Otrzymano: {data}")
                 if sender[0] in self.known_peers:
                     msg = [data.decode(), sender]
                     if int(data.decode().split(':')[1]) not in self.listen_ignore_list:
