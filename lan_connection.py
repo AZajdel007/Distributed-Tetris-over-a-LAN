@@ -118,7 +118,7 @@ class Peer:
                 print(f"Otrzymano: {data}")
                 if sender[0] in self.known_peers:
                     msg = [data.decode(), sender]
-                    if int(data.decode().split(':')[1]) not in self.listen_ignore_list:
+                    if int(data.decode().split(':')[1].split('-')[0]) not in self.listen_ignore_list:
                         if msg not in self.received_msg:
                             self.received_msg.append(msg)
                             print(self.received_msg)
