@@ -68,15 +68,14 @@ class KWidthTetris(g.Game):
                             # del self.grid.grid[row]
                             # self.grid.grid.insert(0, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
                             if all(x == 1 for x in self.players_row_status[row]):
-                                for x in range(len(self.peer.known_peers) + 1):
-                                    self.peer.listen_ignore_list.append(row)
-                                    self.peer.received_msg.clear()
-                                    del self.players_row_status[row]
-                                    self.players_row_status.insert(0, [0 for n in range(len(self.peer.known_peers) + 1)])
-                                    del self.grid.grid[row]
-                                    self.grid.grid.insert(0, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
-                                    self.peer.send_msg_to_all_players(f"{row}-Cleared")
-                                    self.peer.listen_ignore_list.remove(row)
+                                self.peer.listen_ignore_list.append(row)
+                                self.peer.received_msg.clear()
+                                del self.players_row_status[row]
+                                self.players_row_status.insert(0, [0 for n in range(len(self.peer.known_peers) + 1)])
+                                del self.grid.grid[row]
+                                self.grid.grid.insert(0, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+                                self.peer.send_msg_to_all_players(f"{row}-Cleared")
+                                self.peer.listen_ignore_list.remove(row)
                     self.next_block = self.random_new_block()
                 else:
                     self.loop = False
