@@ -56,6 +56,7 @@ class KWidthTetris(g.Game):
                     self.next_block = self.random_new_block()
                 else:
                     self.loop = False
+                    self.peer.send_msg_to_all_players("RIP")
                     clock_end = pg.time.get_ticks()
                     game_time_sec = (clock_end - clock_start) / 1000
                     self.peer.quit()
@@ -81,6 +82,15 @@ class KWidthTetris(g.Game):
                                 self.players_row_status.insert(0, [0 for n in range(len(self.peer.known_peers) + 1)])
                                 del self.grid.grid[row]
                                 self.grid.grid.insert(0, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+                elif "RIP" in new_msg:
+                    self.loop = False
+                    clock_end = pg.time.get_ticks()
+                    game_time_sec = (clock_end - clock_start) / 1000
+                    self.peer.quit()
+                    self.peer.stop_listen_event.set()
+                    self.peer.stop_broadcast_event.set()
+                    listening_thread.join()
+                    del self.peer
                 elif "Bye" in new_msg:
                     self.loop = False
                     clock_end = pg.time.get_ticks()
