@@ -112,6 +112,7 @@ class Peer:
     def listen(self):
         self.stop_listen_event.clear()
         self.sock.settimeout(1.0)
+        last_msg = None
         while not self.stop_listen_event.is_set():
             try:
                 data, sender = self.sock.recvfrom(1024)
@@ -119,7 +120,8 @@ class Peer:
                 if sender[0] in self.known_peers:
                     msg = [data.decode(), sender]
 
-                    if '-' in msg[0]:
+                    if msg != last_msg and '-' in msg[0]:
+                        last_msg = msg
                         if msg[0].split('-')[0] not in self.listen_ignore_list:
                             if msg not in self.received_msg:
                                 self.received_msg.append(msg)
