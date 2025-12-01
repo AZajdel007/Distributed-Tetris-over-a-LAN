@@ -76,7 +76,7 @@ class KWidthTetris(g.Game):
                         cleared_row = row.split('-')[0]
                         cleared_row = int(cleared_row)
                         peer_index = self.known_peers.index(sender_ip)
-                        self.players_row_status[row][peer_index] = 1
+                        self.players_row_status[cleared_row][peer_index] = 0
                         print(peer_index)
                     else:
                         row = int(row)
@@ -90,6 +90,7 @@ class KWidthTetris(g.Game):
                                     self.players_row_status.insert(0, [0 for n in range(len(self.peer.known_peers) + 1)])
                                     del self.grid.grid[row]
                                     self.grid.grid.insert(0, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+                                    self.peer.send_msg_to_all_players(f"{self.peer.my_ip}:{row}-Cleared")
                 elif "RIP" in new_msg:
                     self.loop = False
                     clock_end = pg.time.get_ticks()
