@@ -18,13 +18,18 @@ class Block:
         self.current_rotation = None
         self.tile_size = 30
         self.is_placed = False
+        self.x_shift = 200
 
     """Rysowanie aktualnego spadającego bloku na ekranie"""
     def draw(self, screen):
         for tile in self.rotations[self.current_rotation]:
             if self.position.column + tile[0] >= 0 and self.position.row + tile[1] >= 0:
-                tile_rect = pygame.Rect((self.position.column+tile[0])*self.tile_size, (self.position.row+tile[1])*self.tile_size, self.tile_size-1, self.tile_size-1)
+                tile_rect = pygame.Rect(self.x_shift+(self.position.column+tile[0])*self.tile_size, (self.position.row+tile[1])*self.tile_size, self.tile_size-1, self.tile_size-1)
                 pg.draw.rect(screen, colors.color[self.block_color], tile_rect)
+
+    def next_block_draw(self, screen):
+        pass
+
 
     #def draw(self, screen):
     #    for tile in self.rotations[self.current_rotation]:
@@ -116,6 +121,12 @@ class IBlock(Block):
         }
         self.current_rotation = 0
 
+    def next_block_draw(self, screen):
+        for tile in self.rotations[self.current_rotation]:
+            tile_rect = pygame.Rect((self.x_shift + 300) + 70 + tile[0]*self.tile_size, 124 + tile[1]*self.tile_size, self.tile_size - 1, self.tile_size - 1)
+            pg.draw.rect(screen, colors.color[self.block_color], tile_rect)
+
+
 class OBlock(Block):
     def __init__(self):
         Block.__init__(self)
@@ -126,6 +137,12 @@ class OBlock(Block):
             0: ((0, 0), (1, 0), (0, 1), (1, 1))
         }
         self.current_rotation = 0
+
+    def next_block_draw(self, screen):
+        for tile in self.rotations[self.current_rotation]:
+            tile_rect = pygame.Rect((self.x_shift + 300) + 68 + tile[0]*self.tile_size, 110 + tile[1]*self.tile_size, self.tile_size - 1, self.tile_size - 1)
+            pg.draw.rect(screen, colors.color[self.block_color], tile_rect)
+
 
 class TBlock(Block):
     def __init__(self):
@@ -141,6 +158,11 @@ class TBlock(Block):
         }
         self.current_rotation = 0
 
+    def next_block_draw(self, screen):
+        for tile in self.rotations[self.current_rotation]:
+            tile_rect = pygame.Rect((self.x_shift + 300) + 85 + tile[0]*self.tile_size, 135 + tile[1]*self.tile_size, self.tile_size - 1, self.tile_size - 1)
+            pg.draw.rect(screen, colors.color[self.block_color], tile_rect)
+
 class JBlock(Block):
     def __init__(self):
         Block.__init__(self)
@@ -155,6 +177,11 @@ class JBlock(Block):
         }
         self.current_rotation = 0
 
+    def next_block_draw(self, screen):
+        for tile in self.rotations[self.current_rotation]:
+            tile_rect = pygame.Rect((self.x_shift + 300) + 85 + tile[0]*self.tile_size, 107 + tile[1]*self.tile_size, self.tile_size - 1, self.tile_size - 1)
+            pg.draw.rect(screen, colors.color[self.block_color], tile_rect)
+
 class LBlock(Block):
     def __init__(self):
         Block.__init__(self)
@@ -168,6 +195,10 @@ class LBlock(Block):
             3: ((0, -1), (0, 0), (0, 1), (1, 1)),
         }
         self.current_rotation = 0
+    def next_block_draw(self, screen):
+        for tile in self.rotations[self.current_rotation]:
+            tile_rect = pygame.Rect((self.x_shift + 300) + 85 + tile[0]*self.tile_size, 107 + tile[1]*self.tile_size, self.tile_size - 1, self.tile_size - 1)
+            pg.draw.rect(screen, colors.color[self.block_color], tile_rect)
 
 
 class SBlock(Block):
@@ -181,6 +212,10 @@ class SBlock(Block):
             1: ((-1, -1), (0, 0), (-1, 0), (0, 1))
         }
         self.current_rotation = 0
+    def next_block_draw(self, screen):
+        for tile in self.rotations[self.current_rotation]:
+            tile_rect = pygame.Rect((self.x_shift + 300) + 85 + tile[0]*self.tile_size, 110 + tile[1]*self.tile_size, self.tile_size - 1, self.tile_size - 1)
+            pg.draw.rect(screen, colors.color[self.block_color], tile_rect)
 
 class ZBlock(Block):
     def __init__(self):
@@ -193,4 +228,8 @@ class ZBlock(Block):
             1: ((-1, 1), (0, 0), (-1, 0), (0, -1))
         }
         self.current_rotation = 0
+    def next_block_draw(self, screen):
+        for tile in self.rotations[self.current_rotation]:
+            tile_rect = pygame.Rect((self.x_shift + 300) + 85 + tile[0]*self.tile_size, 110 + tile[1]*self.tile_size, self.tile_size - 1, self.tile_size - 1)
+            pg.draw.rect(screen, colors.color[self.block_color], tile_rect)
 

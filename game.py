@@ -39,6 +39,7 @@ class Game:
         self.gamemode = "Tetris"
         self.peer = None
 
+        self.shift = 200
         self.screen = screen
         self.background_color = bg_color
         self.clock = clock
@@ -77,24 +78,24 @@ class Game:
         broadcast_thread.start()
         lobby_loop = True
 
-        change_ready_status_button = button.Button(50, 300, 200, 50, "Ready!", colors.color[8], colors.color[9],
+        change_ready_status_button = button.Button(self.shift+50, 300, 200, 50, "Ready!", colors.color[8], colors.color[9],
                                          colors.color[0], self.peer.change_ready_status)
 
         while lobby_loop:
             self.screen.fill(self.background_color)
             font = pg.font.Font(None, 36)
             text_surf = font.render("Searching for players", True, colors.color[10])
-            self.screen.blit(text_surf, (24, 25))
+            self.screen.blit(text_surf, (self.shift+24, 25))
 
 
             if self.peer.my_ready_status:
                 change_ready_status_button.text = "Not ready"
                 text_surf = font.render("Ready!", True, colors.color[11])
-                self.screen.blit(text_surf, (100, 75))
+                self.screen.blit(text_surf, (self.shift+100, 75))
             else:
                 change_ready_status_button.text = "Ready!"
                 text_surf = font.render("Not ready!", True, colors.color[12])
-                self.screen.blit(text_surf, (86, 75))
+                self.screen.blit(text_surf, (self.shift+86, 75))
 
             ready_peers = 0
             for known_peer in self.peer.known_peers.keys():
@@ -127,6 +128,22 @@ class Game:
     def game_loop(self):
         pass
 
+    def draw(self):
+        self.screen.fill(self.background_color)
+        self.grid.draw(self.screen)
+
+        self.current_block.draw(self.screen)
+
+        tile_rect = pg.Rect(self.shift + 25 + 300, 75 , 0.75*self.shift, 125)
+        pg.draw.rect(self.screen, colors.color[9], tile_rect)
+        self.next_block.next_block_draw(self.screen)
+
+        font = pg.font.Font(None, 36)
+        text_surf = font.render("Next piece:", True, colors.color[10])
+        self.screen.blit(text_surf, (self.shift + 35 + 300, 25))
+
+        pg.display.update()
+        self.clock.tick(60)
 
 
 class SoloTetris(Game):
@@ -176,13 +193,7 @@ class SoloTetris(Game):
                         self.current_block.move_down(self.grid)
                     elif event.key == pg.K_SPACE:
                         self.current_block.drop(self.grid)
-            self.screen.fill(self.background_color)
-            self.grid.draw(self.screen)
-
-            self.current_block.draw(self.screen)
-
-            pg.display.update()
-            self.clock.tick(60)
+            self.draw()
         self.game_over(self.screen, game_time_sec)
 
 
