@@ -70,7 +70,7 @@ class KWidthTetris(g.Game):
 
             if len(self.peer.received_msg) != 0:
                 print("elo")
-                new_msg = self.peer.received_msg.get()
+                new_msg = self.peer.received_msg.pop()
                 new_msg = new_msg[0]
                 print(self.players_row_status)
                 if ':' in new_msg:
