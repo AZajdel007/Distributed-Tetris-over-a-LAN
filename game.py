@@ -7,6 +7,7 @@ import lan_connection as lan
 import threading
 import colors
 import button
+import time
 
 
 class Game:
@@ -42,7 +43,21 @@ class Game:
         self.background_color = bg_color
         self.clock = clock
 
-    def game_over(self, screen):
+    def game_over_screen(self, game_time):
+        self.screen.fill(self.background_color)
+        font = pg.font.Font(None, 36)
+        text_surf = font.render(f"You have last: {game_time}", True, colors.color[10])
+        self.screen.blit(text_surf, (24, 25))
+        pg.display.update()
+        self.clock.tick(60)
+        pg.time.wait(3000)
+
+
+
+
+
+
+    def game_over(self, screen, game_time_sec):
         for n in range(0, 5):
             self.grid.draw(screen)
             pg.display.update()
@@ -50,6 +65,8 @@ class Game:
             self.current_block.draw(screen)
             pg.display.update()
             pg.time.wait(300)
+
+        self.game_over_screen(game_time_sec)
 
 
     def lobby(self):
@@ -106,6 +123,7 @@ class Game:
             pg.display.update()
             self.clock.tick(60)
 
+
     def game_loop(self):
         pass
 
@@ -117,6 +135,9 @@ class SoloTetris(Game):
 
         # Ustawiamy timer co 1000 ms (czyli co 1 sekundę)
         pg.time.set_timer(block_goes_down, 1000)
+
+        clock_start = pg.time.get_ticks()
+        game_time_sec = 0
         while self.loop:
             for row in range(self.grid.rows - 1, -1, -1):
                 tiles = 0
@@ -133,6 +154,8 @@ class SoloTetris(Game):
                     self.next_block = self.random_new_block()
                 else:
                     self.loop = False
+                    clock_end = pg.time.get_ticks()
+                    game_time_sec = (clock_end - clock_start) / 1000
 
             for event in pg.event.get():
                 if event.type == pg.QUIT:
@@ -160,7 +183,7 @@ class SoloTetris(Game):
 
             pg.display.update()
             self.clock.tick(60)
-        self.game_over(self.screen)
+        self.game_over(self.screen, game_time_sec)
 
 
 

@@ -28,6 +28,9 @@ class KWidthTetris(g.Game):
 
         # Ustawiamy timer co 1000 ms (czyli co 1 sekundę)
         pg.time.set_timer(block_goes_down, 1000)
+
+        clock_start = pg.time.get_ticks()
+        game_time_sec = 0
         while self.loop:
             #print(self.players_row_status)
             for row in range(self.grid.rows - 1, -1, -1):
@@ -53,6 +56,12 @@ class KWidthTetris(g.Game):
                     self.next_block = self.random_new_block()
                 else:
                     self.loop = False
+                    clock_end = pg.time.get_ticks()
+                    game_time_sec = (clock_end - clock_start) / 1000
+                    self.peer.quit()
+                    self.peer.stop_listen_event.set()
+                    self.peer.stop_broadcast_event.set()
+                    listening_thread.join()
 
             for event in pg.event.get():
                 if event.type == pg.QUIT:
@@ -95,6 +104,17 @@ class KWidthTetris(g.Game):
                                     self.players_row_status.insert(0, [0 for n in range(len(self.peer.known_peers) + 1)])
                                     del self.grid.grid[row]
                                     self.grid.grid.insert(0, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+                    elif "Bye" in new_msg:
+                        self.loop = False
+                        clock_end = pg.time.get_ticks()
+                        game_time_sec = (clock_end - clock_start) / 1000
+                        self.peer.quit()
+                        self.peer.stop_listen_event.set()
+                        self.peer.stop_broadcast_event.set()
+                        listening_thread.join()
+                        del self.peer
+
+
 
                     print(self.players_row_status)
 
@@ -106,7 +126,7 @@ class KWidthTetris(g.Game):
 
             pg.display.update()
             self.clock.tick(60)
-        self.game_over(self.screen)
+        self.game_over(self.screen, game_time_sec)
 
 
 def start_k_width_game(screen, bg_color, clock):
@@ -114,6 +134,7 @@ def start_k_width_game(screen, bg_color, clock):
     game.gamemode = "K-Width"
     game.lobby()
     game.game_loop()
+    del game
 
 """
 class KWidthTetris(g.Game):
