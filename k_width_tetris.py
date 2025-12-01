@@ -63,6 +63,36 @@ class KWidthTetris(g.Game):
                     self.peer.stop_broadcast_event.set()
                     listening_thread.join()
 
+            if not self.peer.received_msg.empty():
+                print("elo")
+                new_msg = self.peer.received_msg.get()
+                new_msg = new_msg[0]
+                print(self.players_row_status)
+                if ':' in new_msg:
+                    sender_ip, row = new_msg.split(":")
+                    row = int(row)
+                    peer_index = self.known_peers.index(sender_ip)
+                    self.players_row_status[row][peer_index] = 1
+                    print(peer_index)
+                    for player in range(len(self.known_peers) + 1):
+                        if all(x == 1 for x in self.players_row_status[row]):
+                            for x in range(len(self.known_peers) + 1):
+                                del self.players_row_status[row]
+                                self.players_row_status.insert(0, [0 for n in range(len(self.peer.known_peers) + 1)])
+                                del self.grid.grid[row]
+                                self.grid.grid.insert(0, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+                elif "Bye" in new_msg:
+                    self.loop = False
+                    clock_end = pg.time.get_ticks()
+                    game_time_sec = (clock_end - clock_start) / 1000
+                    self.peer.quit()
+                    self.peer.stop_listen_event.set()
+                    self.peer.stop_broadcast_event.set()
+                    listening_thread.join()
+                    del self.peer
+
+                print(self.players_row_status)
+
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     self.peer.quit()
@@ -86,37 +116,7 @@ class KWidthTetris(g.Game):
                         self.current_block.move_down(self.grid)
                     elif event.key == pg.K_SPACE:
                         self.current_block.drop(self.grid)
-                if not self.peer.received_msg.empty():
-                    print("elo")
-                    new_msg = self.peer.received_msg.get()
-                    new_msg = new_msg[0]
-                    print(self.players_row_status)
-                    if ':' in new_msg:
-                        sender_ip, row = new_msg.split(":")
-                        row = int(row)
-                        peer_index = self.known_peers.index(sender_ip)
-                        self.players_row_status[row][peer_index] = 1
-                        print(peer_index)
-                        for player in range(len(self.known_peers)+1):
-                            if all(x == 1 for x in self.players_row_status[row]):
-                                for x in range(len(self.known_peers)+1):
-                                    del self.players_row_status[row]
-                                    self.players_row_status.insert(0, [0 for n in range(len(self.peer.known_peers) + 1)])
-                                    del self.grid.grid[row]
-                                    self.grid.grid.insert(0, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
-                    elif "Bye" in new_msg:
-                        self.loop = False
-                        clock_end = pg.time.get_ticks()
-                        game_time_sec = (clock_end - clock_start) / 1000
-                        self.peer.quit()
-                        self.peer.stop_listen_event.set()
-                        self.peer.stop_broadcast_event.set()
-                        listening_thread.join()
-                        del self.peer
 
-
-
-                    print(self.players_row_status)
 
 
             self.screen.fill(self.background_color)
