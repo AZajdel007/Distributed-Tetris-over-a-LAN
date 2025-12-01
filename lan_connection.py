@@ -129,7 +129,7 @@ class Peer:
     def quit(self):
         print(f"{self.my_ip}: Bye")
         for player in self.known_peers:
-            self.sock.sendto(f"{self.my_ip}:Bye".encode(), (player, PORT))
+            self.sock.sendto("Bye".encode(), (player, PORT))
 
 
 #peer = Peer("yo")
