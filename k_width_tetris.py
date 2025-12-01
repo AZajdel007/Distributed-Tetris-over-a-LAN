@@ -49,6 +49,7 @@ class KWidthTetris(g.Game):
                             self.players_row_status.insert(0, [0 for n in range(len(self.peer.known_peers)+1)])
                             del self.grid.grid[row]
                             self.grid.grid.insert(0, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+                            self.peer.send_msg_to_all_players(f"{self.peer.my_ip}:{row}-Cleared")
 
             if self.current_block.is_placed:
                 self.current_block = self.next_block
@@ -71,17 +72,24 @@ class KWidthTetris(g.Game):
                 print(self.players_row_status)
                 if ':' in new_msg:
                     sender_ip, row = new_msg.split(":")
-                    row = int(row)
-                    peer_index = self.known_peers.index(sender_ip)
-                    self.players_row_status[row][peer_index] = 1
-                    print(peer_index)
-                    for player in range(len(self.known_peers) + 1):
-                        if all(x == 1 for x in self.players_row_status[row]):
-                            for x in range(len(self.known_peers) + 1):
-                                del self.players_row_status[row]
-                                self.players_row_status.insert(0, [0 for n in range(len(self.peer.known_peers) + 1)])
-                                del self.grid.grid[row]
-                                self.grid.grid.insert(0, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+                    if '-' in row:
+                        cleared_row = row.split('-')[0]
+                        cleared_row = int(cleared_row)
+                        peer_index = self.known_peers.index(sender_ip)
+                        self.players_row_status[row][peer_index] = 1
+                        print(peer_index)
+                    else:
+                        row = int(row)
+                        peer_index = self.known_peers.index(sender_ip)
+                        self.players_row_status[row][peer_index] = 1
+                        print(peer_index)
+                        for player in range(len(self.known_peers) + 1):
+                            if all(x == 1 for x in self.players_row_status[row]):
+                                for x in range(len(self.known_peers) + 1):
+                                    del self.players_row_status[row]
+                                    self.players_row_status.insert(0, [0 for n in range(len(self.peer.known_peers) + 1)])
+                                    del self.grid.grid[row]
+                                    self.grid.grid.insert(0, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
                 elif "RIP" in new_msg:
                     self.loop = False
                     clock_end = pg.time.get_ticks()
