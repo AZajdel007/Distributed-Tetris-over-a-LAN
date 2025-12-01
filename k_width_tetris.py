@@ -40,7 +40,7 @@ class KWidthTetris(g.Game):
                         tiles = tiles + 1
                 if tiles == 10:
                     self.players_row_status[row][len(self.peer.known_peers)] = 1
-                    self.peer.send_msg_to_all_players(f"{self.peer.my_ip}:{row}")
+                    self.peer.send_msg_to_all_players(f"{row}-Full")
                     #del self.grid.grid[row]
                     #self.grid.grid.insert(0, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
                     if all(x == 1 for x in self.players_row_status[row]):
@@ -51,7 +51,7 @@ class KWidthTetris(g.Game):
                             self.players_row_status.insert(0, [0 for n in range(len(self.peer.known_peers)+1)])
                             del self.grid.grid[row]
                             self.grid.grid.insert(0, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
-                            self.peer.send_msg_to_all_players(f"{self.peer.my_ip}:{row}-Cleared")
+                            self.peer.send_msg_to_all_players(f"{row}-Cleared")
                             self.peer.listen_ignore_list.remove(row)
 
             if self.current_block.is_placed:
@@ -71,18 +71,14 @@ class KWidthTetris(g.Game):
             if len(self.peer.received_msg) != 0:
                 print("elo")
                 new_msg = self.peer.received_msg.pop()
-                new_msg = new_msg[0]
+                new_msg, sender_ip = new_msg
                 print(self.players_row_status)
-                if ':' in new_msg:
-                    sender_ip, row = new_msg.split(":")
-                    if '-' in row:
-                        cleared_row = row.split('-')[0]
-                        cleared_row = int(cleared_row)
-                        peer_index = self.known_peers.index(sender_ip)
-                        self.players_row_status[cleared_row][peer_index] = 0
-                        print(peer_index)
-                    else:
-                        row = int(row)
+
+                if '-' in new_msg:
+                    row, row_status = new_msg.split('-')
+                    row = int(row)
+                    if row_status == "Full":
+                        # obsługa informacji że gracz ma pełny jeden wiersz
                         peer_index = self.known_peers.index(sender_ip)
                         self.players_row_status[row][peer_index] = 1
                         print(peer_index)
@@ -90,10 +86,17 @@ class KWidthTetris(g.Game):
                             if all(x == 1 for x in self.players_row_status[row]):
                                 for x in range(len(self.known_peers) + 1):
                                     del self.players_row_status[row]
-                                    self.players_row_status.insert(0, [0 for n in range(len(self.peer.known_peers) + 1)])
+                                    self.players_row_status.insert(0,
+                                                                   [0 for n in range(len(self.peer.known_peers) + 1)])
                                     del self.grid.grid[row]
                                     self.grid.grid.insert(0, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
-                                    self.peer.send_msg_to_all_players(f"{self.peer.my_ip}:{row}-Cleared")
+                                    self.peer.send_msg_to_all_players(f"{row}-Cleared")
+                    else:
+                        # obsługa informacji że gracz skasował jeden wiersz
+                        peer_index = self.known_peers.index(sender_ip)
+                        self.players_row_status[row][peer_index] = 0
+                        print(peer_index)
+
                 elif "RIP" in new_msg:
                     self.loop = False
                     clock_end = pg.time.get_ticks()

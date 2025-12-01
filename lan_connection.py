@@ -115,13 +115,16 @@ class Peer:
         while not self.stop_listen_event.is_set():
             try:
                 data, sender = self.sock.recvfrom(1024)
-                print(f"Otrzymano: {data}")
+                print(f"Otrzymano: {data}:{sender}")
                 if sender[0] in self.known_peers:
                     msg = [data.decode(), sender]
-                    if int(data.decode().split(':')[1].split('-')[0]) not in self.listen_ignore_list:
+                    if '-' in msg[0].split(':')[1] and int(data.decode().split(':')[1].split('-')[0]) not in self.listen_ignore_list:
                         if msg not in self.received_msg:
                             self.received_msg.append(msg)
                             print(self.received_msg)
+                    else:
+                        self.received_msg.append(msg)
+                        print(self.received_msg)
             except socket.timeout:
                 continue
 
