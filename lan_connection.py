@@ -2,7 +2,7 @@ import socket
 import time
 import threading
 import ipaddress
-import queue
+from collections import deque
 
 
 BROADCAST_IP = "255.255.255.255"
@@ -56,7 +56,8 @@ class Peer:
         self.known_peers = dict()
         self.stop_listen_event = threading.Event()
         self.stop_broadcast_event = threading.Event()
-        self.received_msg = queue.Queue()
+        self.received_msg = deque(maxlen=100)
+        self.listen_ignore_list = []
 
 
     def search_for_peers(self):
@@ -111,17 +112,16 @@ class Peer:
     def listen(self):
         self.stop_listen_event.clear()
         self.sock.settimeout(1.0)
-        last_msg = None
         while not self.stop_listen_event.is_set():
             try:
                 data, sender = self.sock.recvfrom(1024)
 
                 if sender[0] in self.known_peers:
                     msg = [data.decode(), sender]
-                    if msg != last_msg:
-                        self.received_msg.put(msg)
-                        last_msg = msg
-                        print("elo")
+                    if int(data.decode().split(':')[1]) not in self.listen_ignore_list:
+                        if msg not in self.received_msg:
+                            self.received_msg.append(msg)
+                            print(self.received_msg)
             except socket.timeout:
                 continue
 

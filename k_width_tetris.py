@@ -45,11 +45,14 @@ class KWidthTetris(g.Game):
                     #self.grid.grid.insert(0, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
                     if all(x == 1 for x in self.players_row_status[row]):
                         for x in range(len(self.peer.known_peers) + 1):
+                            self.peer.listen_ignore_list.append(row)
+                            self.peer.received_msg.clear()
                             del self.players_row_status[row]
                             self.players_row_status.insert(0, [0 for n in range(len(self.peer.known_peers)+1)])
                             del self.grid.grid[row]
                             self.grid.grid.insert(0, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
                             self.peer.send_msg_to_all_players(f"{self.peer.my_ip}:{row}-Cleared")
+                            self.peer.listen_ignore_list.remove(row)
 
             if self.current_block.is_placed:
                 self.current_block = self.next_block
@@ -65,7 +68,7 @@ class KWidthTetris(g.Game):
                     self.peer.stop_broadcast_event.set()
                     listening_thread.join()
 
-            if not self.peer.received_msg.empty():
+            if len(self.peer.received_msg) != 0:
                 print("elo")
                 new_msg = self.peer.received_msg.get()
                 new_msg = new_msg[0]
