@@ -184,13 +184,7 @@ class KWidthTetris(g.Game):
 
 
 
-            self.screen.fill(self.background_color)
-            self.grid.draw(self.screen)
-
-            self.current_block.draw(self.screen)
-
-            pg.display.update()
-            self.clock.tick(60)
+            self.draw()
         self.game_over(self.screen, game_time_sec)
 
 
