@@ -12,6 +12,21 @@ class KWidthTetris(g.Game):
 
         self.known_peers = []
 
+    def even_start(self):
+        ready_players = [0 for n in range(len(self.peer.known_peers)+1)]
+        self.peer.send_msg_to_all_players("READY!")
+        loop = True
+        while loop:
+            new_msg = self.peer.received_msg.pop()
+            msg, sender_ip = new_msg
+            if msg == "READY!":
+                peer_index = self.known_peers.index(sender_ip)
+                ready_players[peer_index] = 1
+                if all(x == 1 for x in ready_players):
+                    loop = False
+
+
+
 
     def game_loop(self):
         print("Start!!!")
@@ -28,6 +43,9 @@ class KWidthTetris(g.Game):
 
         # Ustawiamy timer co 1000 ms (czyli co 1 sekundę)
         pg.time.set_timer(block_goes_down, 1000)
+
+        self.even_start()
+        self.peer.received_msg.clear()
 
         clock_start = pg.time.get_ticks()
         game_time_sec = 0
