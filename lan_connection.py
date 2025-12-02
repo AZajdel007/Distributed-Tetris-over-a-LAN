@@ -118,7 +118,7 @@ class Peer:
                 data, sender = self.sock.recvfrom(1024)
                 print(f"Otrzymano: {data}:{sender}")
                 if sender[0] in self.known_peers:
-                    msg = [data.decode(), sender]
+                    msg = [data.decode(), sender[0]]
 
                     if msg != last_msg and '-' in msg[0]:
                         last_msg = msg
