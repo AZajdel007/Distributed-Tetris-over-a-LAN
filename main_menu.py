@@ -6,6 +6,7 @@ import button
 import colors
 from functools import partial
 import sys
+import NIEDOTYKAC
 
 class MainMenu:
     def __init__(self):
