@@ -17,13 +17,14 @@ class KWidthTetris(g.Game):
         self.peer.send_msg_to_all_players("READY!")
         loop = True
         while loop:
-            new_msg = self.peer.received_msg.pop()
-            msg, sender_ip = new_msg
-            if msg == "READY!":
-                peer_index = self.known_peers.index(sender_ip)
-                ready_players[peer_index] = 1
-                if all(x == 1 for x in ready_players):
-                    loop = False
+            if len(self.peer.received_msg) != 0:
+                new_msg = self.peer.received_msg.pop()
+                msg, sender_ip = new_msg
+                if msg == "READY!":
+                    peer_index = self.known_peers.index(sender_ip)
+                    ready_players[peer_index] = 1
+                    if all(x == 1 for x in ready_players):
+                        loop = False
 
 
 
