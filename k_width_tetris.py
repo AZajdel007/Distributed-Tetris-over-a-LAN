@@ -13,7 +13,7 @@ class KWidthTetris(g.Game):
         self.known_peers = []
 
     def even_start(self):
-        ready_players = [0 for n in range(len(self.peer.known_peers)+1)]
+        ready_players = [0 for n in range(len(self.peer.known_peers))]
 
         loop = True
         while loop:
