@@ -14,9 +14,10 @@ class KWidthTetris(g.Game):
 
     def even_start(self):
         ready_players = [0 for n in range(len(self.peer.known_peers)+1)]
-        self.peer.send_msg_to_all_players("READY!")
+
         loop = True
         while loop:
+            self.peer.send_msg_to_all_players("READY!")
             if len(self.peer.received_msg) != 0:
                 new_msg = self.peer.received_msg.pop()
                 msg, sender_ip = new_msg
