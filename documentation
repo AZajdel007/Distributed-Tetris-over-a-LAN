@@ -1,0 +1,41 @@
+Distributed Tetris over a LAN
+
+Python
+
+Main libraries:
+-PyGame
+-socket
+-threading
+
+Major Problems:
+- How to represent blocks and thier rotations
+- LAN connection
+- LAN communication
+- Shifting tetris: blocks collision when shifting
+
+Grid:
+Grid is just a 10x20 2D array with each cell in one grid tile and its value is representing color of placed block on a grid where 0 is empty tile
+
+LAN Module
+  The whole LAN module is implemented in lan_connection.py file as a class Peer
+  The class has methods:
+  - get_my_ip(self):
+    . returns host ip in current local network
+  - get_broadcast_ip(self):
+   . returns broadcast ip in local network
+  - change_ready_status(self):
+   . changes ready status in lobby and also sends message to all other players about current ready status
+  - search_for_peers(self):
+    . while this method is not stopped, it is searching for players in local network by broadcasting discovery msg for one of gamemodes
+      only players searching the same gamemode are recognised and then added to player list which contains also player ready status
+  - broadcast(self):
+    . while this method is not stopped, it is broadcasting discovery msg
+  - send_msg_to_all_players(self, msg):
+    . sends msg to every player in the game
+  - send_msg_to_one_player(self, player_ip, msg):
+    . sends msg to one specific player in the game
+  - listen(self):
+    . it listnes for new messages from players while game is running, when there is any then it puts ti in recived msg deque
+  - quit(self):
+    . sends to every player information about player disconnecting
+    
