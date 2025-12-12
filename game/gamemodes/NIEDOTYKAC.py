@@ -1,4 +1,4 @@
-import game as g
+from game import game as g
 import threading
 import pygame as pg
 import sys

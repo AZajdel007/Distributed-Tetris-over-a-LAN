@@ -1,5 +1,6 @@
 import pygame as pg
-import colors
+from commons import colors
+
 
 class Grid:
     def __init__(self):

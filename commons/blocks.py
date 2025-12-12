@@ -1,7 +1,7 @@
 import pygame
 import pygame as pg
-import colors
-from position import Position
+from commons import colors
+from commons.position import Position
 
 GRID_HORIZONTAL_SIZE = 10
 GRID_VERTICAL_SIZE = 20

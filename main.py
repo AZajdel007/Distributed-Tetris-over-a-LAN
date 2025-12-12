@@ -1,5 +1,6 @@
 import pygame as pg
-import main_menu as menu
+from game import main_menu as menu
+
 pg.init()
 
 mainmenu = menu.MainMenu()
