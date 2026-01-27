@@ -11,6 +11,16 @@ class ShiftingTetris(g.Game):
         self.players_row_status = None
 
         self.known_peers = []
+        self.next_player = None
+    def set_next_player(self):
+        all_players = self.known_peers + self.peer.my_ip
+        print(all_players)
+        all_players.sort(key=ipaddress.ip_address)
+        for i, ip in enumerate(all_players):
+            if ip == self.peer.my_ip:
+                self.next_player = all_players[i+1]
+                break
+        print(self.next_player)
 
     def even_start(self):
         ready_players = [0 for n in range(len(self.peer.known_peers))]
@@ -39,15 +49,20 @@ class ShiftingTetris(g.Game):
 
         for peer in self.peer.known_peers:
             self.known_peers.append(peer)
-        self.known_peers.sort(key=ipaddress.ip_address)
+        self.set_next_player()
         print(self.known_peers)
 
         # Ustawiamy timer co 1000 ms (czyli co 1 sekundę)
         pg.time.set_timer(block_goes_down, 1000)
 
-        self.even_start()
-        self.peer.received_msg.clear()
+        #self.even_start()
 
+        self.peer.received_msg.clear()
+        self.peer.quit()
+        self.peer.stop_listen_event.set()
+        self.peer.stop_broadcast_event.set()
+        listening_thread.join()
+        del self.peer
 
 
 def start_shifting_game(screen, bg_color, clock):
