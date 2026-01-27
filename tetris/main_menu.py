@@ -21,10 +21,10 @@ class MainMenu:
         image = pg.image.load("assets/logo.png").convert_alpha()
         self.screen.fill(self.background_color)
         start_solo_game_action = partial(game.start_solo_game, self.screen, self.background_color, self.clock)
-        #start_k_width_action = partial(k_width_tetris.start_k_width_game, self.screen, self.background_color, self.clock)
-        start_k_width_action = partial(NIEDOTYKAC.start_k_width_game, self.screen, self.background_color, self.clock)
-        #start_shifting_action = partial(shifting_tetris.start_shifting_game, self.screen, self.background_color, self.clock)
-        start_shifting_action = partial(testy2.start_shifting_game, self.screen, self.background_color, self.clock)
+        start_k_width_action = partial(k_width_tetris.start_k_width_game, self.screen, self.background_color, self.clock)
+
+        start_shifting_action = partial(shifting_tetris.start_shifting_game, self.screen, self.background_color, self.clock)
+
 
 
         play_solo_button = button.Button(self.shift + 50, 300, 200, 50, "Play Solo", colors.color[8], colors.color[9], colors.color[0], start_solo_game_action)

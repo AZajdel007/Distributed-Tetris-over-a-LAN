@@ -44,7 +44,7 @@ class Game:
         self.screen.fill(self.background_color)
         font = pg.font.Font(None, 36)
         text_surf = font.render(f"You have last: {game_time}", True, colors.color[10])
-        self.screen.blit(text_surf, (24, 25))
+        self.screen.blit(text_surf, (225, 150))
         pg.display.update()
         self.clock.tick(60)
         pg.time.wait(3000)

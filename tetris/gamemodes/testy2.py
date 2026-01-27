@@ -3,11 +3,13 @@ import threading
 import pygame as pg
 import ipaddress
 import sys
+from commons import colors
 
 class ShiftingTetris(g.Game):
     def __init__(self, screen, bg_color, clock):
         super().__init__(screen, bg_color, clock)
         self.known_peers = []
+        self.till_next_shift = 0
 
         self.next_player = None
     def set_next_player(self):
@@ -60,6 +62,35 @@ class ShiftingTetris(g.Game):
         print(f"msg: {msg}")
 
 
+    def draw(self):
+        self.screen.fill(self.background_color)
+        self.grid.draw(self.screen)
+
+        self.current_block.draw(self.screen)
+
+        tile_rect = pg.Rect(self.shift + 25 + 300, 75 , 0.75*self.shift, 125)
+        pg.draw.rect(self.screen, colors.color[9], tile_rect)
+        self.next_block.next_block_draw(self.screen)
+
+        tile_rect2 = pg.Rect(25, 75, 0.75 * self.shift, 125)
+        pg.draw.rect(self.screen, colors.color[9], tile_rect2)
+        self.next_block.next_block_draw(self.screen)
+
+        font = pg.font.Font(None, 36)
+        font2 = pg.font.Font(None, 50)
+        text_surf = font.render("Next piece:", True, colors.color[10])
+        self.screen.blit(text_surf, (self.shift + 35 + 300, 25))
+        self.till_next_shift = int(self.till_next_shift / 1000)
+        text_surface = font.render(f"Next shift:", True, (255, 255, 255))
+        text_surface2 = font2.render(f"{self.till_next_shift}", True, (255, 255, 255))
+
+        # wyświetl na ekranie
+        self.screen.blit(text_surface, (40, 30))
+        self.screen.blit(text_surface2, (85, 120))
+        pg.display.update()
+        self.clock.tick(60)
+
+
 
     def game_loop(self):
         print("Start!!!")
@@ -84,7 +115,12 @@ class ShiftingTetris(g.Game):
 
         clock_start = pg.time.get_ticks()
         game_time_sec = 0
+        last_shift = pg.time.get_ticks()
         while self.loop:
+            now = pg.time.get_ticks()
+            self.till_next_shift = 15000 - (now - last_shift)
+            self.till_next_shift = max(0, self.till_next_shift)
+
             if self.current_block.is_placed:
                 self.current_block = self.next_block
                 if not self.current_block.check_collision_with_wall(0, self.grid):
@@ -114,8 +150,15 @@ class ShiftingTetris(g.Game):
 
                 if ',' in new_msg:
                     col = new_msg.split(',')
+                    col.remove('')
+                    for i, val in enumerate(col):
+                        col[i] = int(val)
                     print(f"col: {col}")
                     print(type(col[0]))
+
+                    for i, row in enumerate(self.grid.grid):
+                        row.pop()
+                        row.insert(0, col[i])
 
 
                 elif "RIP" in new_msg:
@@ -152,6 +195,7 @@ class ShiftingTetris(g.Game):
                     if self.current_block.check_collision_under(self.grid):
                         self.current_block.put_on_grid(self.grid)
                 elif event.type == shift_event:
+                    last_shift = pg.time.get_ticks()
                     self.shift_action()
                 elif event.type == pg.KEYDOWN:
                     if event.key == pg.K_LEFT:
