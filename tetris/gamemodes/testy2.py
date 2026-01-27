@@ -55,7 +55,7 @@ class ShiftingTetris(g.Game):
                     if sender_ip in not_ready_players:
                         not_ready_players.remove(sender_ip)
 
-        self.peer.send_msg_to_one_player(msg, self.next_player)
+        self.peer.send_msg_to_one_player(self.next_player, msg)
 
 
 
