@@ -19,7 +19,10 @@ class ShiftingTetris(g.Game):
         all_players.sort(key=ipaddress.ip_address)
         for i, ip in enumerate(all_players):
             if ip == self.peer.my_ip:
-                self.next_player = all_players[i+1]
+                if i == len(all_players) - 1:
+                    self.next_player = all_players[0]
+                else:
+                    self.next_player = all_players[i+1]
                 break
         print(self.next_player)
 
