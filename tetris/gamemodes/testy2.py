@@ -45,6 +45,7 @@ class ShiftingTetris(g.Game):
         for i, col in enumerate(last_column):
             msg = msg + str(col) + ","
         self.peer.received_msg.clear()
+        self.peer.listen_last_msg = None
         not_ready_players = self.known_peers.copy()
         while len(not_ready_players) != 0:
             self.peer.send_msg_to_all_players("READY TO SHIFT!")
@@ -79,6 +80,7 @@ class ShiftingTetris(g.Game):
         pg.time.set_timer(shift_event, 15000)
         self.even_start()
         self.peer.received_msg.clear()
+        self.peer.listen_last_msg = None
 
         clock_start = pg.time.get_ticks()
         game_time_sec = 0
@@ -112,7 +114,8 @@ class ShiftingTetris(g.Game):
 
                 if ',' in new_msg:
                     col = new_msg.split(',')
-                    print(col)
+                    print(f"col: {col}")
+                    print(type(col[0]))
 
 
                 elif "RIP" in new_msg:
