@@ -109,7 +109,6 @@ class ShiftingTetris(g.Game):
                 print("elo")
                 new_msg = self.peer.received_msg.pop()
                 new_msg, sender_ip = new_msg
-                print(self.players_row_status)
 
                 if ',' in new_msg:
                     col = new_msg.split(',')
