@@ -41,7 +41,7 @@ class ShiftingTetris(g.Game):
                     if all(x == 1 for x in ready_players):
                         loop = False
 
-    def shift(self):
+    def shift_action(self):
         last_column = [row[-1] for row in self.grid.grid]
         msg = ",".join(map(str, last_column))
         self.peer.received_msg.clear()
@@ -151,7 +151,7 @@ class ShiftingTetris(g.Game):
                     if self.current_block.check_collision_under(self.grid):
                         self.current_block.put_on_grid(self.grid)
                 elif event.type == shift_event:
-                    self.shift()
+                    self.shift_action()
                 elif event.type == pg.KEYDOWN:
                     if event.key == pg.K_LEFT:
                         self.current_block.move_x(-1, self.grid)
