@@ -8,9 +8,7 @@ class ShiftingTetris(g.Game):
     def __init__(self, screen, bg_color, clock):
         super().__init__(screen, bg_color, clock)
         self.known_peers = []
-        self.players_row_status = None
 
-        self.known_peers = []
         self.next_player = None
     def set_next_player(self):
         all_players = self.known_peers.copy()
@@ -43,19 +41,22 @@ class ShiftingTetris(g.Game):
 
     def shift_action(self):
         last_column = [row[-1] for row in self.grid.grid]
-        msg = ",".join(map(str, last_column))
+        msg = ""
+        for i, col in enumerate(last_column):
+            msg = msg + str(col) + ","
         self.peer.received_msg.clear()
         not_ready_players = self.known_peers.copy()
         while len(not_ready_players) != 0:
             self.peer.send_msg_to_all_players("READY TO SHIFT!")
             if len(self.peer.received_msg) != 0:
                 new_msg = self.peer.received_msg.pop()
-                msg, sender_ip = new_msg
-                if msg == "READY TO SHIFT!":
+                new_msg, sender_ip = new_msg
+                if new_msg == "READY TO SHIFT!":
                     if sender_ip in not_ready_players:
                         not_ready_players.remove(sender_ip)
 
         self.peer.send_msg_to_one_player(self.next_player, msg)
+        print(f"msg: {msg}")
 
 
 
@@ -67,7 +68,6 @@ class ShiftingTetris(g.Game):
         block_goes_down = pg.USEREVENT + 1
         shift_event = pg.USEREVENT + 2
 
-        self.players_row_status = [[0 for n in range(len(self.peer.known_peers)+1)] for n in range(20)]
 
         for peer in self.peer.known_peers:
             self.known_peers.append(peer)
@@ -135,7 +135,6 @@ class ShiftingTetris(g.Game):
                     listening_thread.join()
                     del self.peer
 
-                print(self.players_row_status)
 
             for event in pg.event.get():
                 if event.type == pg.QUIT:
