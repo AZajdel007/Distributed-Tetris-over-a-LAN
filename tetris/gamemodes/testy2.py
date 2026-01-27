@@ -13,7 +13,8 @@ class ShiftingTetris(g.Game):
         self.known_peers = []
         self.next_player = None
     def set_next_player(self):
-        all_players = self.known_peers + self.peer.my_ip
+        all_players = self.known_peers
+        all_players.append(self.peer.my_ip)
         print(all_players)
         all_players.sort(key=ipaddress.ip_address)
         for i, ip in enumerate(all_players):
