@@ -1,6 +1,6 @@
 import pygame as pg
-from game import game
-from game.gamemodes import k_width_tetris, shifting_tetris, testy2
+from tetris import game as game
+from tetris.gamemodes import k_width_tetris, shifting_tetris, testy2
 from commons import colors, button
 from functools import partial
 import sys
@@ -8,7 +8,7 @@ import sys
 
 class MainMenu:
     def __init__(self):
-        icon = pg.image.load("../assets/logo.png") # IKONKA GRY
+        icon = pg.image.load("assets/logo.png") # IKONKA GRY
         pg.display.set_icon(icon)
         self.shift = 200
         self.screen = pg.display.set_mode((300+2*self.shift, 600)) # ROZMIAR OKNA
@@ -18,7 +18,7 @@ class MainMenu:
 
     def main_menu(self):
         loop = True
-        image = pg.image.load("../assets/logo.png").convert_alpha()
+        image = pg.image.load("assets/logo.png").convert_alpha()
         self.screen.fill(self.background_color)
         start_solo_game_action = partial(game.start_solo_game, self.screen, self.background_color, self.clock)
         start_k_width_action = partial(k_width_tetris.start_k_width_game, self.screen, self.background_color, self.clock)
