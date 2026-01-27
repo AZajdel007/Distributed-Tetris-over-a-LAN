@@ -13,7 +13,7 @@ class ShiftingTetris(g.Game):
         self.known_peers = []
         self.next_player = None
     def set_next_player(self):
-        all_players = self.known_peers
+        all_players = self.known_peers.copy()
         all_players.append(self.peer.my_ip)
         print(all_players)
         all_players.sort(key=ipaddress.ip_address)
@@ -45,7 +45,7 @@ class ShiftingTetris(g.Game):
         last_column = [row[-1] for row in self.grid.grid]
         msg = ",".join(map(str, last_column))
         self.peer.received_msg.clear()
-        not_ready_players = self.known_peers
+        not_ready_players = self.known_peers.copy()
         while len(not_ready_players) != 0:
             self.peer.send_msg_to_all_players("READY TO SHIFT!")
             if len(self.peer.received_msg) != 0:
