@@ -1,6 +1,6 @@
 import pygame as pg
 from game import game
-from game.gamemodes import k_width_tetris, shifting_tetris
+from game.gamemodes import k_width_tetris, shifting_tetris, testy2
 from commons import colors, button
 from functools import partial
 import sys
@@ -22,7 +22,9 @@ class MainMenu:
         self.screen.fill(self.background_color)
         start_solo_game_action = partial(game.start_solo_game, self.screen, self.background_color, self.clock)
         start_k_width_action = partial(k_width_tetris.start_k_width_game, self.screen, self.background_color, self.clock)
-        start_shifting_action = partial(shifting_tetris.start_shifting_game, self.screen, self.background_color, self.clock)
+        #start_shifting_action = partial(shifting_tetris.start_shifting_game, self.screen, self.background_color, self.clock)
+        start_shifting_action = partial(testy2.start_shifting_game, self.screen, self.background_color, self.clock)
+
 
         play_solo_button = button.Button(self.shift + 50, 300, 200, 50, "Play Solo", colors.color[8], colors.color[9], colors.color[0], start_solo_game_action)
         play_k_width_button = button.Button(self.shift + 50, 400, 200, 50, "Play K-Width", colors.color[8], colors.color[9], colors.color[0], start_k_width_action)
