@@ -1,28 +1,54 @@
+import ipaddress
+
 from tetris import game as g
 import pygame as pg
 import sys
+import ipaddress
 
 timeBetweenShifts = 30 #how many seconds
 #jeżeli gra przegrana bye(wyrzucenie z gry)
 class ShiftingTetris(g.Game):
-    def shift(self):
+
+    def __init__(self,screen, bg_color, clock):
+        super().__init__(screen, bg_color, clock)
+        self.known_peers = []
+
+    def even_start(self):
+        ready_players = [0 for n in range(len(self.peer.known_peers))]
+
+        loop = True
+        while loop:
+            self.peer.send_msg_to_all_players("READY!")
+            if len(self.peer.received_msg) != 0:
+                new_msg = self.peer.received_msg.pop()
+                msg, sender_ip = new_msg
+                if msg == "READY!":
+                    peer_index = self.known_peers.index(sender_ip)
+                    ready_players[peer_index] = 1
+                    if all(x == 1 for x in ready_players):
+                        loop = False
+
+    def shift_grid(self):
         #send out data
         # known peers is ip and status
-        global msg
         tmp = self.peer.known_peers.keys()
         tmp=list(tmp)
         tmp.append(self.peer.my_ip)
-        tmp.sort()
+        tmp.sort(key=ipaddress.ip_address)
+        next_player = 0
+        #else: next_player = tmp[self.peer.my_ip + 1]
+        for player in range(len(tmp)):
+            if tmp[player] == self.peer.my_ip:
+                if player == len(tmp)-1: next_player=0
+                else: next_player = player+1
 
-        if self.peer.my_ip == tmp[-1]: next_player=tmp[0]
-        else: next_player = tmp[self.peer.my_ip + 1]
-
+        msg = list()
         for row in range(self.grid.rows):
-            msg = msg.join(self.grid.cols[0].rows[row])
+            msg.append(self.grid.grid[row][0])
+        msg=str(msg)
+        self.peer.send_msg_to_one_player(tmp[next_player],msg)
 
-        self.peer.send_msg_to_one_player(self,next_player,msg)
-
-        str_msg = self.peer.recived_msg.pop()[0]
+        str_msg = self.peer.received_msg.pop()[0]
 
         for col in range(self.grid.cols): # 20 rows, 10 columns
             for row in range(self.grid.rows):
@@ -30,17 +56,23 @@ class ShiftingTetris(g.Game):
                 if col==0:
                     self.grid[row][col] = str_msg[col]
 
-        self.grid.draw(self,self.screen)
+        self.grid.draw(self.screen)
         pass
 
     def game_loop(self):
-
         block_goes_down = pg.USEREVENT + 1
         shift = pg.USEREVENT + 2
+
+        for peer in self.peer.known_peers:
+            self.known_peers.append(peer)
 
         # Ustawiamy timer co 1000 ms (czyli co 1 sekundę)
         pg.time.set_timer(block_goes_down, 1000)
         pg.time.set_timer(shift, timeBetweenShifts*1000) #co 30s wrzuca event shift do queue
+
+        self.even_start()
+        self.peer.received_msg.clear()
+        self.peer.listen_last_msg = None
 
         while self.loop:
             for row in range(self.grid.rows - 1, -1, -1):
@@ -71,7 +103,7 @@ class ShiftingTetris(g.Game):
                     #    self.current_block.put_on_grid(self.grid)
                 elif event.type == shift:
                     #kod mechaniki shifting tetrisa
-                    self.shift()
+                    self.shift_grid()
                     continue
                 elif event.type == pg.KEYDOWN:
                     if event.key == pg.K_LEFT:
@@ -100,4 +132,5 @@ def start_shifting_game(screen, bg_color, clock):
     game = ShiftingTetris(screen, bg_color, clock)
     game.gamemode = "Shifting"
     game.lobby()
+    game.game_loop()
 
