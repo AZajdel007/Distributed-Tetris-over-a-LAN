@@ -56,13 +56,16 @@ class ShiftingTetris(g.Game):
         pass
 
     def game_loop(self):
-        self.even_start()
         block_goes_down = pg.USEREVENT + 1
         shift = pg.USEREVENT + 2
+
+        for peer in self.peer.known_peers:
+            self.peer.known_peers.append(peer)
 
         # Ustawiamy timer co 1000 ms (czyli co 1 sekundę)
         pg.time.set_timer(block_goes_down, 1000)
         pg.time.set_timer(shift, timeBetweenShifts*1000) #co 30s wrzuca event shift do queue
+        self.even_start()
 
         while self.loop:
             for row in range(self.grid.rows - 1, -1, -1):
