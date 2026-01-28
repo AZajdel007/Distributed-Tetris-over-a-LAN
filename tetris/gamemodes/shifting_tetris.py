@@ -8,6 +8,22 @@ import ipaddress
 timeBetweenShifts = 30 #how many seconds
 #jeżeli gra przegrana bye(wyrzucenie z gry)
 class ShiftingTetris(g.Game):
+
+    def even_start(self):
+        ready_players = [0 for n in range(len(self.peer.known_peers))]
+
+        loop = True
+        while loop:
+            self.peer.send_msg_to_all_players("READY!")
+            if len(self.peer.received_msg) != 0:
+                new_msg = self.peer.received_msg.pop()
+                msg, sender_ip = new_msg
+                if msg == "READY!":
+                    peer_index = self.known_peers.index(sender_ip)
+                    ready_players[peer_index] = 1
+                    if all(x == 1 for x in ready_players):
+                        loop = False
+
     def shift_grid(self):
         #send out data
         # known peers is ip and status
@@ -40,7 +56,7 @@ class ShiftingTetris(g.Game):
         pass
 
     def game_loop(self):
-
+        self.even_start()
         block_goes_down = pg.USEREVENT + 1
         shift = pg.USEREVENT + 2
 
