@@ -92,6 +92,7 @@ class ShiftingTetris(g.Game):
 
 
 
+
     def game_loop(self):
         print("Start!!!")
         listening_thread = threading.Thread(target=self.peer.listen)
