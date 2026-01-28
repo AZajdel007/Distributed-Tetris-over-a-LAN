@@ -60,7 +60,7 @@ class ShiftingTetris(g.Game):
         shift = pg.USEREVENT + 2
 
         for peer in self.peer.known_peers:
-            self.peer.known_peers.append(peer)
+            self.peer.known_peers.update(peer)
 
         # Ustawiamy timer co 1000 ms (czyli co 1 sekundę)
         pg.time.set_timer(block_goes_down, 1000)
