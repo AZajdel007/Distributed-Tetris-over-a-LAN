@@ -19,7 +19,7 @@ class ShiftingTetris(g.Game):
         #else: next_player = tmp[self.peer.my_ip + 1]
         for player in range(len(tmp)):
             if tmp[player] == self.peer.my_ip:
-                if player == len(tmp): next_player=0
+                if player == len(tmp)-1: next_player=0
                 else: next_player = player+1
 
         msg = list()
