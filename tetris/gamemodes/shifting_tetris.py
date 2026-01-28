@@ -1,6 +1,9 @@
+import ipaddress
+
 from tetris import game as g
 import pygame as pg
 import sys
+import ipaddress
 
 timeBetweenShifts = 30 #how many seconds
 #jeżeli gra przegrana bye(wyrzucenie z gry)
@@ -11,14 +14,18 @@ class ShiftingTetris(g.Game):
         tmp = self.peer.known_peers.keys()
         tmp=list(tmp)
         tmp.append(self.peer.my_ip)
-        tmp.sort()
+        tmp.sort(key=ipaddress.ip_address)
 
-        if self.peer.my_ip == tmp[-1]: next_player=tmp[0]
-        else: next_player = tmp[self.peer.my_ip + 1]
+        #else: next_player = tmp[self.peer.my_ip + 1]
+        for player in range(len(tmp)):
+            if tmp[player] == self.peer.my_ip:
+                if player == len(tmp): next_player=0
+                else: next_player = player+1
 
+        msg = list()
         for row in range(self.grid.rows):
-            msg = msg.join(self.grid.cols[0].rows[row])
-
+            msg = msg.append(self.grid.cols[0].rows[row])
+        msg=str(msg)
         self.peer.send_msg_to_one_player(self,next_player,msg)
 
         str_msg = self.peer.recived_msg.pop()[0]
