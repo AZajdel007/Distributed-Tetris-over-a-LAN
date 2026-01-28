@@ -8,7 +8,6 @@ class ShiftingTetris(g.Game):
     def shift_grid(self):
         #send out data
         # known peers is ip and status
-        global msg
         tmp = self.peer.known_peers.keys()
         tmp=list(tmp)
         tmp.append(self.peer.my_ip)
