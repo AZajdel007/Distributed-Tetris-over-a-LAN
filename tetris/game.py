@@ -1,13 +1,9 @@
-import grid
 import random
-import blocks
 import pygame as pg
 import sys
-import lan_connection as lan
+from LAN import lan_connection as lan
 import threading
-import colors
-import button
-import time
+from commons import colors, grid, button, blocks
 
 
 class Game:
@@ -48,7 +44,7 @@ class Game:
         self.screen.fill(self.background_color)
         font = pg.font.Font(None, 36)
         text_surf = font.render(f"You have last: {game_time}", True, colors.color[10])
-        self.screen.blit(text_surf, (24, 25))
+        self.screen.blit(text_surf, (225, 150))
         pg.display.update()
         self.clock.tick(60)
         pg.time.wait(3000)
@@ -78,8 +74,8 @@ class Game:
         broadcast_thread.start()
         lobby_loop = True
 
-        change_ready_status_button = button.Button(self.shift+50, 300, 200, 50, "Ready!", colors.color[8], colors.color[9],
-                                         colors.color[0], self.peer.change_ready_status)
+        change_ready_status_button = button.Button(self.shift + 50, 300, 200, 50, "Ready!", colors.color[8], colors.color[9],
+                                                   colors.color[0], self.peer.change_ready_status)
 
         while lobby_loop:
             self.screen.fill(self.background_color)

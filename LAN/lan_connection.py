@@ -58,6 +58,7 @@ class Peer:
         self.stop_broadcast_event = threading.Event()
         self.received_msg = deque(maxlen=100)
         self.listen_ignore_list = []
+        self.listen_last_msg = None
 
 
     def search_for_peers(self):
@@ -112,7 +113,7 @@ class Peer:
     def listen(self):
         self.stop_listen_event.clear()
         self.sock.settimeout(1.0)
-        last_msg = None
+        #last_msg = None
         while not self.stop_listen_event.is_set():
             try:
                 data, sender = self.sock.recvfrom(1024)
@@ -120,15 +121,16 @@ class Peer:
                 if sender[0] in self.known_peers:
                     msg = [data.decode(), sender[0]]
 
-                    if msg != last_msg and '-' in msg[0]:
-                        last_msg = msg
+                    #if msg != self.listen_last_msg and '-' in msg[0]:
+                    if msg != self.listen_last_msg:
+                        self.listen_last_msg = msg
                         if msg[0].split('-')[0] not in self.listen_ignore_list:
                             if msg not in self.received_msg:
                                 self.received_msg.append(msg)
                                 print(self.received_msg)
-                    else:
-                        self.received_msg.append(msg)
-                        print(self.received_msg)
+                    #else:
+                        #self.received_msg.append(msg)
+                        #print(self.received_msg)
             except socket.timeout:
                 continue
 

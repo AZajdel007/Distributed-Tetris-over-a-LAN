@@ -1,4 +1,4 @@
-import game as g
+from tetris import game as g
 import threading
 import pygame as pg
 import sys
@@ -47,6 +47,7 @@ class KWidthTetris(g.Game):
 
         self.even_start()
         self.peer.received_msg.clear()
+        self.peer.listen_last_msg = None
 
         clock_start = pg.time.get_ticks()
         game_time_sec = 0

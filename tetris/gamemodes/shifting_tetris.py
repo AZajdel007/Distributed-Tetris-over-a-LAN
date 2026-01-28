@@ -1,4 +1,4 @@
-import game as g
+from tetris import game as g
 import pygame as pg
 import sys
 
