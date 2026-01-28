@@ -5,7 +5,7 @@ import sys
 timeBetweenShifts = 30 #how many seconds
 #jeżeli gra przegrana bye(wyrzucenie z gry)
 class ShiftingTetris(g.Game):
-    def shift(self):
+    def shift_grid(self):
         #send out data
         # known peers is ip and status
         global msg
@@ -71,7 +71,7 @@ class ShiftingTetris(g.Game):
                     #    self.current_block.put_on_grid(self.grid)
                 elif event.type == shift:
                     #kod mechaniki shifting tetrisa
-                    self.shift()
+                    self.shift_grid()
                     continue
                 elif event.type == pg.KEYDOWN:
                     if event.key == pg.K_LEFT:
@@ -100,4 +100,5 @@ def start_shifting_game(screen, bg_color, clock):
     game = ShiftingTetris(screen, bg_color, clock)
     game.gamemode = "Shifting"
     game.lobby()
+    game.game_loop()
 
