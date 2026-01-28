@@ -69,7 +69,10 @@ class ShiftingTetris(g.Game):
         # Ustawiamy timer co 1000 ms (czyli co 1 sekundę)
         pg.time.set_timer(block_goes_down, 1000)
         pg.time.set_timer(shift, timeBetweenShifts*1000) #co 30s wrzuca event shift do queue
+
         self.even_start()
+        self.peer.received_msg.clear()
+        self.peer.listen_last_msg = None
 
         while self.loop:
             for row in range(self.grid.rows - 1, -1, -1):
