@@ -66,6 +66,15 @@ class Block:
                 return True
         return False
 
+    """Sprawdzenie w wersji Shifting, czy nie dochodzi do kolizji spadającego klocka z klockiem obok"""
+    def check_collision_sides(self, grid):
+        for tile in self.rotations[self.current_rotation]:
+            if self.position.row+tile[1]+1 >= 20 or grid.grid[self.position.row + tile[1]+1][self.position.column + tile[0]] != 0 or self.position.row+tile[1]-1 <= 0 or grid.grid[self.position.row + tile[1]-1][self.position.column + tile[0]] != 0:
+                return True
+            #tu musisz dodać czy żeby zwracało true jak coś jest obok dla wersji shifting,
+            # albo trzeba napisać od nowa taką funkcję i wywołać ją w file shifting_tetris # tile1-rows 0-columns
+        return False
+
     # WERSJA DZIAŁAJĄCA ALE BEZ MOŻLIWOŚCI ROTACJI BLOKÓW NA SAMEJ GÓRZE
     #def check_collision_under(self, grid):
     #    for tile in self.rotations[self.current_rotation]:
