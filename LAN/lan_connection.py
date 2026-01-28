@@ -90,6 +90,8 @@ class Peer:
             elif msg.startswith("PLAYER_RESPONSE:"):
                 player_ip = msg.split(":")[1]
                 player_ready_status = msg.split(":")[2]
+                if player_ip == self.my_ip:
+                    continue
                 if player_ip not in self.known_peers:
                     self.known_peers[player_ip] = player_ready_status
                     self.sock.sendto(f"PLAYER_RESPONSE:{self.my_ip}:{self.my_ready_status}".encode(), addr)
