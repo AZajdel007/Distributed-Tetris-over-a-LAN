@@ -9,6 +9,10 @@ timeBetweenShifts = 30 #how many seconds
 #jeżeli gra przegrana bye(wyrzucenie z gry)
 class ShiftingTetris(g.Game):
 
+    def __init__(self,screen, bg_color, clock):
+        super().__init__(screen, bg_color, clock)
+        self.known_peers = []
+
     def even_start(self):
         ready_players = [0 for n in range(len(self.peer.known_peers))]
 
@@ -60,7 +64,7 @@ class ShiftingTetris(g.Game):
         shift = pg.USEREVENT + 2
 
         for peer in self.peer.known_peers:
-            self.peer.known_peers.update(peer)
+            self.known_peers.append(peer)
 
         # Ustawiamy timer co 1000 ms (czyli co 1 sekundę)
         pg.time.set_timer(block_goes_down, 1000)
