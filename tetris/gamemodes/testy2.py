@@ -46,17 +46,22 @@ class ShiftingTetris(g.Game):
         msg = ""
         for i, col in enumerate(last_column):
             msg = msg + str(col) + ","
-        self.peer.received_msg.clear()
-        self.peer.listen_last_msg = None
+        #self.peer.received_msg.clear()
+        #self.peer.listen_last_msg = None
         not_ready_players = self.known_peers.copy()
+        if self.peer.my_ip in not_ready_players:
+            not_ready_players.remove(self.peer.my_ip)
         while len(not_ready_players) != 0:
+
             self.peer.send_msg_to_all_players("READY TO SHIFT!")
             if len(self.peer.received_msg) != 0:
                 new_msg = self.peer.received_msg.pop()
                 new_msg, sender_ip = new_msg
                 if new_msg == "READY TO SHIFT!":
+                    print(f"not ready:{not_ready_players} sender:{sender_ip}")
                     if sender_ip in not_ready_players:
                         not_ready_players.remove(sender_ip)
+            self.peer.send_msg_to_all_players("READY TO SHIFT!")
 
         self.peer.send_msg_to_one_player(self.next_player, msg)
         print(f"msg: {msg}")
