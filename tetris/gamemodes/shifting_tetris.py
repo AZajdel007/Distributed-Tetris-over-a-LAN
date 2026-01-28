@@ -28,7 +28,7 @@ class ShiftingTetris(g.Game):
         msg=str(msg)
         self.peer.send_msg_to_one_player(tmp[next_player],msg)
 
-        str_msg = self.peer.recived_msg.pop()[0]
+        str_msg = self.peer.received_msg.pop()[0]
 
         for col in range(self.grid.cols): # 20 rows, 10 columns
             for row in range(self.grid.rows):
