@@ -122,6 +122,9 @@ class Peer:
                 print(f"Otrzymano: {data}:{sender}")
                 if sender[0] in self.known_peers:
                     msg = [data.decode(), sender[0]]
+                    if msg == "READY TO SHIFT!" or msg == "GO!":
+                        self.received_msg.append(msg)
+                        print(self.received_msg)
 
                     #if msg != self.listen_last_msg and '-' in msg[0]:
                     if msg != self.listen_last_msg:
@@ -130,8 +133,8 @@ class Peer:
                             if msg not in self.received_msg:
                                 self.received_msg.append(msg)
                                 print(self.received_msg)
-                    #else:
-                        #self.received_msg.append(msg)
+                    else:
+                        self.received_msg.append(msg)
                         #print(self.received_msg)
             except socket.timeout:
                 continue

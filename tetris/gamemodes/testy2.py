@@ -10,8 +10,10 @@ class ShiftingTetris(g.Game):
         super().__init__(screen, bg_color, clock)
         self.known_peers = []
         self.till_next_shift = 0
-
+        self.shift_event = None
         self.next_player = None
+        self.players_ready_for_shift = []
+        self.next_shift = 0
     def set_next_player(self):
         all_players = self.known_peers.copy()
         all_players.append(self.peer.my_ip)
@@ -41,30 +43,8 @@ class ShiftingTetris(g.Game):
                     if all(x == 1 for x in ready_players):
                         loop = False
 
-    def shift_action(self):
-        last_column = [row[-1] for row in self.grid.grid]
-        msg = ""
-        for i, col in enumerate(last_column):
-            msg = msg + str(col) + ","
-        #self.peer.received_msg.clear()
-        #self.peer.listen_last_msg = None
-        not_ready_players = self.known_peers.copy()
-        if self.peer.my_ip in not_ready_players:
-            not_ready_players.remove(self.peer.my_ip)
-        while len(not_ready_players) != 0:
 
-            self.peer.send_msg_to_all_players("READY TO SHIFT!")
-            if len(self.peer.received_msg) != 0:
-                new_msg = self.peer.received_msg.pop()
-                new_msg, sender_ip = new_msg
-                if new_msg == "READY TO SHIFT!":
-                    print(f"not ready:{not_ready_players} sender:{sender_ip}")
-                    if sender_ip in not_ready_players:
-                        not_ready_players.remove(sender_ip)
-            self.peer.send_msg_to_all_players("READY TO SHIFT!")
 
-        self.peer.send_msg_to_one_player(self.next_player, msg)
-        print(f"msg: {msg}")
 
 
     def draw(self):
@@ -96,6 +76,58 @@ class ShiftingTetris(g.Game):
         self.clock.tick(60)
 
 
+    def shift_action(self):
+        last_column = [row[-1] for row in self.grid.grid]
+        msg_for_next_player = ""
+        for i, col in enumerate(last_column):
+            msg_for_next_player = msg_for_next_player + str(col) + ","
+
+        self.peer.send_msg_to_all_players("READY TO SHIFT!")
+        while len(self.players_ready_for_shift) != len(self.peer.known_peers):
+            if len(self.peer.received_msg) != 0:
+                new_msg = self.peer.received_msg.pop()
+                new_msg, sender_ip = new_msg
+                if "," in new_msg:
+                    col = new_msg.split(',')
+                    col.remove('')
+                    for i, val in enumerate(col):
+                        col[i] = int(val)
+                    print(f"col: {col}")
+                    print(type(col[0]))
+                    self.next_shift = col
+                elif new_msg.startswith("READY TO SHIFT!"):
+                    self.players_ready_for_shift.append(sender_ip)
+        self.peer.send_msg_to_one_player(self.next_player, msg_for_next_player)
+
+
+        loop = True
+        if self.next_shift != 0:
+            for i, row in enumerate(self.grid.grid):
+                row.pop()
+                row.insert(0, self.next_shift[i])
+            loop = False
+
+        while loop:
+            if len(self.peer.received_msg) != 0:
+                new_msg = self.peer.received_msg.pop()
+                new_msg, sender_ip = new_msg
+                if ',' in new_msg:
+                    col = new_msg.split(',')
+                    col.remove('')
+                    for i, val in enumerate(col):
+                        col[i] = int(val)
+                    print(f"col: {col}")
+                    print(type(col[0]))
+
+                    for i, row in enumerate(self.grid.grid):
+                        row.pop()
+                        row.insert(0, col[i])
+                    loop = False
+        self.next_shift = 0
+        self.players_ready_for_shift.clear()
+        pg.time.set_timer(self.shift_event, 0)
+        pg.time.set_timer(self.shift_event, 15000)
+
 
 
     def game_loop(self):
@@ -104,7 +136,7 @@ class ShiftingTetris(g.Game):
         listening_thread.start()
 
         block_goes_down = pg.USEREVENT + 1
-        shift_event = pg.USEREVENT + 2
+        self.shift_event = pg.USEREVENT + 2
 
 
         for peer in self.peer.known_peers:
@@ -114,7 +146,7 @@ class ShiftingTetris(g.Game):
 
         # Ustawiamy timer co 1000 ms (czyli co 1 sekundę)
         pg.time.set_timer(block_goes_down, 1000)
-        pg.time.set_timer(shift_event, 15000)
+        pg.time.set_timer(self.shift_event, 15000)
         self.even_start()
         self.peer.received_msg.clear()
         self.peer.listen_last_msg = None
@@ -154,19 +186,21 @@ class ShiftingTetris(g.Game):
                 new_msg = self.peer.received_msg.pop()
                 new_msg, sender_ip = new_msg
 
-                if ',' in new_msg:
+
+
+
+                #elif "RIP" in new_msg:
+                if "," in new_msg:
                     col = new_msg.split(',')
                     col.remove('')
                     for i, val in enumerate(col):
                         col[i] = int(val)
                     print(f"col: {col}")
                     print(type(col[0]))
-
-                    for i, row in enumerate(self.grid.grid):
-                        row.pop()
-                        row.insert(0, col[i])
-
-
+                    self.next_shift = col
+                elif "READY TO SHIFT!" in new_msg:
+                    if sender_ip != self.peer.my_ip and sender_ip not in self.players_ready_for_shift:
+                        self.players_ready_for_shift.append(sender_ip)
                 elif "RIP" in new_msg:
                     self.loop = False
                     clock_end = pg.time.get_ticks()
@@ -200,7 +234,7 @@ class ShiftingTetris(g.Game):
                     self.current_block.move_down(self.grid)
                     if self.current_block.check_collision_under(self.grid):
                         self.current_block.put_on_grid(self.grid)
-                elif event.type == shift_event:
+                elif event.type == self.shift_event:
                     last_shift = pg.time.get_ticks()
                     self.shift_action()
                 elif event.type == pg.KEYDOWN:

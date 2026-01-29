@@ -22,7 +22,6 @@ class MainMenu:
         self.screen.fill(self.background_color)
         start_solo_game_action = partial(game.start_solo_game, self.screen, self.background_color, self.clock)
         start_k_width_action = partial(k_width_tetris.start_k_width_game, self.screen, self.background_color, self.clock)
-
         start_shifting_action = partial(shifting_tetris.start_shifting_game, self.screen, self.background_color, self.clock)
 
 
