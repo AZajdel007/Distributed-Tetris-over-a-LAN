@@ -144,7 +144,7 @@ class ShiftingTetris(g.Game):
         self.set_next_player()
         print(self.known_peers)
 
-        # Ustawiamy timer co 1000 ms (czyli co 1 sekundę)
+        # Ustawiamy timer co 1000 ms
         pg.time.set_timer(block_goes_down, 1000)
         pg.time.set_timer(self.shift_event, 15000)
         self.even_start()
@@ -188,8 +188,6 @@ class ShiftingTetris(g.Game):
 
 
 
-
-                #elif "RIP" in new_msg:
                 if "," in new_msg:
                     col = new_msg.split(',')
                     col.remove('')

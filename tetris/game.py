@@ -146,7 +146,7 @@ class SoloTetris(Game):
     def game_loop(self):
         block_goes_down = pg.USEREVENT + 1
 
-        # Ustawiamy timer co 1000 ms (czyli co 1 sekundę)
+        # Ustawiamy timer co 1000 ms
         pg.time.set_timer(block_goes_down, 1000)
 
         clock_start = pg.time.get_ticks()

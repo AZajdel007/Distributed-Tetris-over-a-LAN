@@ -10,7 +10,6 @@ PORT = 5005
 
 class Peer:
     def get_my_ip(self):
-        """Sprytne pobranie własnego IP"""
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         try:
             s.connect(("8.8.8.8", 80))
@@ -23,14 +22,13 @@ class Peer:
     def get_broadcast_ip(self):
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         try:
-            # Pobierz własne IP (np. 192.168.1.23)
+            # Pobieramy własne IP
             s.connect(("8.8.8.8", 80))
             ip = s.getsockname()[0]
         finally:
             s.close()
 
-        # Załóż, że masz typową sieć domową /24
-        # (jeśli masz inną maskę, możesz ją dobrać dynamicznie)
+
         network = ipaddress.IPv4Network(ip + "/24", strict=False)
         return str(network.broadcast_address)
 
@@ -145,9 +143,3 @@ class Peer:
         for player in self.known_peers:
             self.sock.sendto("Bye".encode(), (player, PORT))
 
-
-#peer = Peer("yo")
-#listening_thread = threading.Thread(target=peer.search_for_peers)
-#broadcast_thread = threading.Thread(target=peer.broadcast)
-#listening_thread.start()
-#broadcast_thread.start()
