@@ -1,4 +1,4 @@
-"""K-Width Tetris (3 players).
+"""K-Width Tetris (LAN, variable players).
 
 Rule:
     A row is cleared ONLY when *all* devices have completed the same row.
@@ -11,7 +11,7 @@ Messages (UDP):
     - CLEAR-<row>-<clear_id>   -> Leader decided to clear row <row>
 
 Notes:
-    - This mode is fixed to exactly 3 players total (you + 2 peers).
+    - Lobby supports any number of players (minimum 2 total).
     - To avoid double-clears (duplicates / UDP retries), only the leader
       (lowest IP address) emits CLEAR messages.
     - After any clear we reset tracking state, because row indices shift.
@@ -32,7 +32,6 @@ from commons import button, colors
 from tetris import game as g
 
 
-REQUIRED_PLAYERS_TOTAL = 3  # you + 2 peers
 
 
 class KWidthTetris(g.Game):
@@ -107,7 +106,7 @@ class KWidthTetris(g.Game):
             t.join(timeout=2.0)
 
     # ----------------------------
-    # Lobby (override) – require exactly 3 players
+    # Lobby (override) – variable number of players (min 2 total)
     # ----------------------------
     def lobby(self):
         self.peer = lan.Peer(self.gamemode)
@@ -134,7 +133,7 @@ class KWidthTetris(g.Game):
             self.screen.fill(self.background_color)
 
             font = pg.font.Font(None, 32)
-            title = font.render("K-Width (3 players)", True, colors.color[10])
+            title = font.render("K-Width (LAN)", True, colors.color[10])
             self.screen.blit(title, (self.shift + 55, 20))
 
             # Your status
@@ -149,7 +148,7 @@ class KWidthTetris(g.Game):
             # Player count
             peers = list(self.peer.known_peers.keys())
             count = font.render(
-                f"Players found: {1 + len(peers)}/{REQUIRED_PLAYERS_TOTAL}",
+                f"Players found: {1 + len(peers)} (min 2)",
                 True,
                 colors.color[10],
             )
@@ -164,11 +163,11 @@ class KWidthTetris(g.Game):
                 self.screen.blit(small.render(txt, True, colors.color[10]), (self.shift + 30, y))
                 y += 26
 
-            # Start condition: exactly 2 peers, all ready, you ready
+            # Start condition: at least 1 peer (>=2 players total), and everyone is READY (including you)
             ready_peers = sum(
                 1 for ip in self.peer.known_peers if self._is_ready_true(self.peer.known_peers[ip])
             )
-            enough_players = len(self.peer.known_peers) == (REQUIRED_PLAYERS_TOTAL - 1)
+            enough_players = len(self.peer.known_peers) >= 1
             all_ready = enough_players and (ready_peers == len(self.peer.known_peers))
             if all_ready and self.peer.my_ready_status is True:
                 lobby_loop = False
@@ -178,6 +177,7 @@ class KWidthTetris(g.Game):
                 broadcast_thread.join()
 
             for event in pg.event.get():
+
                 if event.type == pg.QUIT:
                     self.peer.quit()
                     self.peer.stop_listen_event.set()
@@ -192,8 +192,8 @@ class KWidthTetris(g.Game):
             pg.display.update()
             self.clock.tick(60)
 
-        # Lock-in the 2 peers we are playing with
-        self.active_peers = sorted(self.peer.known_peers.keys())[: (REQUIRED_PLAYERS_TOTAL - 1)]
+        # Lock-in the roster we will play with (all peers currently in lobby)
+        self.active_peers = sorted(self.peer.known_peers.keys())
         self.players = set(self.active_peers) | {self.peer.my_ip}
         self.leader_ip = self._compute_leader()
 
