@@ -74,7 +74,7 @@ class Game:
         broadcast_thread.start()
         lobby_loop = True
 
-        change_ready_status_button = button.Button(self.shift + 50, 300, 200, 50, "Ready!", colors.color[8], colors.color[9],
+        change_ready_status_button = button.Button(self.shift + 50, 400, 200, 50, "Ready!", colors.color[8], colors.color[9],
                                                    colors.color[0], self.peer.change_ready_status)
 
         while lobby_loop:
@@ -82,6 +82,7 @@ class Game:
             font = pg.font.Font(None, 36)
             text_surf = font.render("Searching for players", True, colors.color[10])
             self.screen.blit(text_surf, (self.shift+24, 25))
+
 
 
             if self.peer.my_ready_status:
@@ -115,6 +116,16 @@ class Game:
 
 
                 change_ready_status_button.handle_event(event)
+
+            y = 200
+            for known_peer in self.peer.known_peers.keys():
+                if str(self.peer.known_peers[known_peer]) == 'True':
+                    txt = f"{known_peer} – READY"
+                else:
+                    txt = f"{known_peer} – NOT READY"
+                self.screen.blit(font.render(txt, True, colors.color[10]), (self.shift + 30, y))
+                self.screen.blit(font.render("Players in lobby:", True, colors.color[10]), (self.shift + 30, 150))
+                y += 26
 
             change_ready_status_button.draw(self.screen)
             pg.display.update()
