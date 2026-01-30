@@ -1,6 +1,6 @@
 import pygame as pg
 from tetris import game as game
-from tetris.gamemodes import k_width_tetris, shifting_tetris, testy2
+from tetris.gamemodes import k_width_tetris, shifting_tetris
 from commons import colors, button
 from functools import partial
 import sys

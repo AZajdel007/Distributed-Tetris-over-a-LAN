@@ -182,7 +182,6 @@ class ShiftingTetris(g.Game):
                     listening_thread.join()
 
             if len(self.peer.received_msg) != 0:
-                print("elo")
                 new_msg = self.peer.received_msg.pop()
                 new_msg, sender_ip = new_msg
 
